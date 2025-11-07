@@ -40,8 +40,8 @@ main
 ├── feature/game1       // 게임 1 기능 구현
 ├── feature/game2       // 게임 2 기능 구현
 ├── feature/game3       // 게임 3 기능 구현
-├── feature/swing       // GUI(Swing) 관련 기능 구현
-└── docs                // 회의록
+└── feature/swing       // GUI(Swing) 관련 기능 구현
+docs                    // 회의록
 ```
 
 - `main`: 전체 프로젝트 구조, 공용 문서 및 공통 클래스 관리
