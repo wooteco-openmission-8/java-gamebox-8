@@ -1,101 +1,112 @@
-# 🎮 GUI기반 종합게임 프로그래밍 (Gamebox)
+# Swing 구현
 
-## 프로젝트 개요
+## 학습 목표
 
-본 프로젝트는 **GUI 환경(Swing)에서 동작하는 종합 게임 플랫폼**을 제작하는 협업 프로젝트입니다.
-
-3개의 게임과 Swing을 주제로, 팀원들이 **브랜치를 순환하며 매일 다른 게임을 개발**하는 방식으로 진행됩니다.
-
-각자가 작성한 코드를 다른 팀원이 이어받아 개선하고 확장하면서, **코드 가독성, 구조적 설계, 협업 커뮤니케이션 능력**을 함께 향상시키는 것을 목표로 합니다.
+- Java Swing을 활용해 **그래픽 기반 GUI 애플리케이션**을 설계하고 구현한다.
+- **이벤트 기반 프로그래밍**을 이해하고, 사용자 입력(키보드/마우스)에 반응하는 구조를 만든다.
+- 공통 클래스(`GameWindow`)를 통해 **객체지향적 구조와 코드 재사용성**을 높인다.
 
 ---
 
-## 목표
+## Swing 기본 구조
 
-- **Git 협업과 브랜치 전략 실습**
-- **객체지향 설계 기반의 콘솔 게임 구현**
-- **문서화를 통한 협업 프로세스 정립**
-- **완성도 높은 미션 결과물 도출**
+Swing의 기본 구조는 크게 컨테이너(Container), 컴포넌드(Component), 그리고 레이아웃(Layout)으로 나눠진다.
 
----
+### 1. 컨테이너 (Container)
 
-## 진행 방식
+컨테이너는 다른 컴포넌트들을 **담고 관리**하는 역할을 한다. `JFrame`이라는 최상위 컨테이너를 사용하여 애플리케이션 창을 만든다.
 
-- **프리코스 경험을 기반**으로 각 게임을 설계하고 구현합니다.
-- 총 3개의 게임과 Swing을 주제로,**팀원들이 하루 단위로 브랜치를 순환하며** 서로의 코드를 이어받아 개발합니다.
-- 매일 20시 스크럼 진행
+- **JFrame:** 애플리케이션의 **기본 창**을 만드는 클래스이다. 가장 바깥 창이 `JFrame`이 된다.
+- **JPanel:** 하나의 **부분적인 컨테이너**로, 여러 UI 컴포넌트를 포함할 수 있는 영역을 만든다. `JFrame` 안에 여러 개의 `JPanel`을 배치하여 UI를 세분화할 수 있다.
 
-  - 스크럼 이전까지 개발 완료
-  - 완료되지 않은 부분도 PR로 제출
-  - 스크럼 이후에는 코드 리뷰 진행
-- 매일 이전 개발자의 코드를 **PR 기반으로 리뷰 및 개선**하며, 코드 품질과 협업 능력을 함께 향상시키는 것을 목표로 합니다.
-- 협업 과정에서는 **PR 리뷰, 브랜치 전략, 커밋 컨벤션 준수**를 원칙으로 합니다.
-
----
-
-## 브랜치 전략
-
-```java
-main
-├── feature/game1       // 게임 1 기능 구현
-├── feature/game2       // 게임 2 기능 구현
-├── feature/game3       // 게임 3 기능 구현
-└── feature/swing       // GUI(Swing) 관련 기능 구현
-docs                    // 회의록
+ex)
+```angular2html
+JFrame frame = new JFrame("Game Window");
+frame.setSize(600, 600); // 창의 크기 설정
+frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // 창을 닫을 때 애플리케이션 종료
+frame.setVisible(true); // 창을 보이게 설정
 ```
 
-- `main`: 전체 프로젝트 구조, 공용 문서 및 공통 클래스 관리
-- `feature/game{1,2,3}`: 각 게임별 로직 구현
-- `feature/swing`: Swing을 활용한 GUI 기능 구현
-- `feature/{feature-name}/{developer-name}`: 기능별 구현
+![JFrame과 JPanel의 구조](JFrame_JPanel_structure.png)
 
-### 진행 절차
+### 2. 컴포넌트 (Component)
 
-1. `main` 브랜치를 기반으로 프로젝트를 초기 세팅합니다.
-2. 각 게임별로 `feature/{feature-name}` 브랜치를 생성합니다.
-3. 첫 번째 개발자는 `feature/{feature-name}/{developer-name}` 브랜치를 생성하고 1일차 개발을 진행한 뒤 PR을 생성합니다.
-4. 다음 개발자는 이전 개발자가 남긴 PR을 기반으로
-    - 코드 리뷰 작성
-    - 피드백 반영 및 기능 추가
-    - README의 진행 상황 업데이트를 수행합니다.
-5. 모든 개발자가 릴레이를 완료하면 PR을 `feature/{feature-name}`으로 병합합니다.
-6. 각 기능 개발이 완료되면 `main`으로 병합합니다.
+컴포넌트는 **GUI를 구성하는 기본 요소**로, 사용자와의 상호작용을 담당한다. 컴포넌트는 버튼, 텍스트 필드, 레이블 등 다양한 UI 요소들을 말한다.
+
+- **JButton:** 버튼 컴포넌트. 클릭 이벤트를 처리할 수 있다.
+- **JLabel:** 텍스트나 이미지를 표시하는 컴포넌트.
+- **JTextField:** 사용자가 텍스트를 입력할 수 있는 필드.
+- **JCheckBox, JRadioButton:** 체크박스나 라디오 버튼과 같은 선택 UI를 제공한다.
+
+ex)
+```angular2html
+JButton startButton = new JButton("Start Game");
+JLabel scoreLabel = new JLabel("Score: 0");
+```
+
+### 3. 레이아웃 (Layout)
+
+레이아웃은 컴포넌트가 **어떻게 배치**될지를 결정하는 방식이다.
+
+- **FlowLayout:** 컴포넌트를 **왼쪽에서 오른쪽으로, 위에서 아래**로 순차적으로 배치한다. 기본적인 레이아웃이다.
+- **BorderLayout:** **상, 하, 좌, 우, 중앙**의 5개 영역에 컴포넌트를 배치할 수 있다.
+- **GridLayout:** 컴포넌트를 **격자 형태**로 배치한다. 지정된 행과 열 수에 맞게 컴포넌트를 배치한다.
+- **BoxLayout:** 컴포넌트를 **수평 또는 수직**으로 배치한다.
+
+ex)
+```angular2html
+frame.setLayout(new FlowLayout());
+frame.add(startButton);
+frame.add(scoreLabel);
+```
+
+### 4. 이벤트 처리
+
+Swing에서 사용자의 입력에 반응하려면 **이벤트 처리**가 필요하다. 이벤트는 사용자가 버튼을 클릭하거나, 키를 누르는 등의 동작을 의미한다.
+
+- **ActionListener:** 버튼을 클릭하거나 특정 동작을 했을 때 이벤트를 처리한다.
+- **KeyListener:** 키보드 입력을 처리한다.
+- **MouseListener:** 마우스 클릭이나 드래그 등 마우스 이벤트를 처리한다.
+
+ex)
+```angular2html
+startButton.addActionListener(new ActionListener() {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        System.out.println("Game Started!");
+    }
+});
+```
 
 ---
 
-## 개발 일정
+## 기능 목록
 
-| 단계 | 기간 | 주요 내용 |
-| --- | --- | --- |
-| 프로젝트 세팅 | 11.06 ~ 11.07 | 킥오프 미팅, 브랜치 전략, 컨벤션, 초기 구조 세팅 |
-| 구현 목록 설계 | 11.08 ~ 11.09 | 기능 구현 목록 작성 |
-| 기능별 개발 | 11.08 ~ 11.18 | 각 기능 구현 및 테스트 |
-| 통합 및 검증 | 11.18 ~ 11.25 | 게임 통합, 리팩토링, 문서화 |
+### 📌 사용자
 
----
+- [ ] 사용자는 게임을 시작하기 위해 게임 창을 실행한다.
+- [ ] 사용자는 원하는 게임을 선택한다.
+- [ ] 사용자는 게임 종료 후 리셋 버튼을 눌러 게임을 초기화할 수 있다.
 
-## 팀원
+### 📌 게임 보드
 
-<table>
-<tr>
-<td align="center"><img src="https://avatars.githubusercontent.com/u/152263125?v=4" width="100px"></td>
-<td align="center"><img src="https://avatars.githubusercontent.com/u/92612072?v=4" width="100px"></td>
-<td align="center"><img src="https://avatars.githubusercontent.com/u/207679446?v=4" width="100px"></td>
-<td align="center"><img src="https://avatars.githubusercontent.com/u/66647057?v=4" width="100px"></td>
-</tr>
-<tr>
-<td align="center"><a href="https://github.com/kimsz123456">김지승</a> <br>BE</td>
-<td align="center"><a href="https://github.com/onaflw">최한송</a> <br>BE</td>
-<td align="center"><a href="https://github.com/Rhw0213">류현우</a> <br>BE</td>
-<td align="center"><a href="https://github.com/K-KY">김규영</a> <br>BE</td>
-</tr>
-</table>
+- [ ] 크기, 제목, 종료 방식 등을 설정한다.
+  - ex) `setTitle("2048")`, `setSize(600, 600)`, `setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)`
+- [ ] 각 게임의 보드를 그리드로 생성한다.
+  - [ ] 2048: 4x4 그리드
+  - [ ] 같은 그림 찾기: 4x4 / 6x6 / 8x8
+  - [ ] 테트리스: 10x20
 
----
+### 📌 출력기
 
-## ⚙️ 기술 스택
+- [ ] 각 게임마다 점수를 표시한다.
+- [ ] 게임이 종료되면 결과 메세지를 표시한다.
+- [ ] 예외 상황이 발생할 경우 에러 메세지를 표시한다.
 
-- Language: **Java 21**
-- Build Tool: **Gradle**
-- Version Control: **Git / GitHub**
-- GUI: **Swing**
+### 📌 기타 UI 기능
+
+- [ ] 각 게임의 입력을 클릭 또는 키보드 이벤트로 처리한다.
+- [ ] 게임 종료 후 새 게임 시작 버튼을 통해 게임 초기화가 가능하다.
+  - [ ] 게임 보드와 점수를 초기 상태로 되돌린다.
+
+
