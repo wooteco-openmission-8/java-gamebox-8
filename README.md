@@ -1,101 +1,99 @@
-# 🎮 GUI기반 종합게임 프로그래밍 (Gamebox)
+# 🎮 2048
 
-## 프로젝트 개요
+##  게임 규칙 (Game Rules)
 
-본 프로젝트는 **GUI 환경(Swing)에서 동작하는 종합 게임 플랫폼**을 제작하는 협업 프로젝트입니다.
+- 게임 보드는 4x4 격자입니다.
 
-3개의 게임과 Swing을 주제로, 팀원들이 **브랜치를 순환하며 매일 다른 게임을 개발**하는 방식으로 진행됩니다.
+1. 시작 시, 무작위 두 칸에 2 또는 4가 생성됩니다.
+2. 방향키(↑, ↓, ←, →) 입력 시:
 
-각자가 작성한 코드를 다른 팀원이 이어받아 개선하고 확장하면서, **코드 가독성, 구조적 설계, 협업 커뮤니케이션 능력**을 함께 향상시키는 것을 목표로 합니다.
+   - 모든 타일이 해당 방향으로 이동합니다.
+   - 같은 숫자의 타일이 충돌하면 합쳐져 두 배의 숫자가 됩니다.
+   - 한 번의 이동에서 같은 타일은 한 번만 합칠 수 있습니다.
 
----
+3. 이동 후 빈 칸이 있다면, 무작위로 2 또는 4가 새로 생성됩니다.
 
-## 목표
+4. 더 이상 이동할 수 있는 공간이 없다면 게임이 종료됩니다.
+5. 2048 타일을 만들면 승리합니다.
 
-- **Git 협업과 브랜치 전략 실습**
-- **객체지향 설계 기반의 콘솔 게임 구현**
-- **문서화를 통한 협업 프로세스 정립**
-- **완성도 높은 미션 결과물 도출**
+##  기능 구현 목록
 
----
+### 1. 게임 인터페이스 (2048)
 
-## 진행 방식
-
-- **프리코스 경험을 기반**으로 각 게임을 설계하고 구현합니다.
-- 총 3개의 게임과 Swing을 주제로,**팀원들이 하루 단위로 브랜치를 순환하며** 서로의 코드를 이어받아 개발합니다.
-- 매일 20시 스크럼 진행
-
-  - 스크럼 이전까지 개발 완료
-  - 완료되지 않은 부분도 PR로 제출
-  - 스크럼 이후에는 코드 리뷰 진행
-- 매일 이전 개발자의 코드를 **PR 기반으로 리뷰 및 개선**하며, 코드 품질과 협업 능력을 함께 향상시키는 것을 목표로 합니다.
-- 협업 과정에서는 **PR 리뷰, 브랜치 전략, 커밋 컨벤션 준수**를 원칙으로 합니다.
+- [ ] `start()` 호출 시 게임 시작
+- [ ] `getName()` 호출 시 `"2048"` 반환
 
 ---
 
-## 브랜치 전략
+### 2. 타일 클래스 (Tile)
 
-```java
-main
-├── feature/game1       // 게임 1 기능 구현
-├── feature/game2       // 게임 2 기능 구현
-├── feature/game3       // 게임 3 기능 구현
-└── feature/swing       // GUI(Swing) 관련 기능 구현
-docs                    // 회의록
-```
-
-- `main`: 전체 프로젝트 구조, 공용 문서 및 공통 클래스 관리
-- `feature/game{1,2,3}`: 각 게임별 로직 구현
-- `feature/swing`: Swing을 활용한 GUI 기능 구현
-- `feature/{feature-name}/{developer-name}`: 기능별 구현
-
-### 진행 절차
-
-1. `main` 브랜치를 기반으로 프로젝트를 초기 세팅합니다.
-2. 각 게임별로 `feature/{feature-name}` 브랜치를 생성합니다.
-3. 첫 번째 개발자는 `feature/{feature-name}/{developer-name}` 브랜치를 생성하고 1일차 개발을 진행한 뒤 PR을 생성합니다.
-4. 다음 개발자는 이전 개발자가 남긴 PR을 기반으로
-    - 코드 리뷰 작성
-    - 피드백 반영 및 기능 추가
-    - README의 진행 상황 업데이트를 수행합니다.
-5. 모든 개발자가 릴레이를 완료하면 PR을 `feature/{feature-name}`으로 병합합니다.
-6. 각 기능 개발이 완료되면 `main`으로 병합합니다.
+- [ ] 숫자 값(`int number`) 저장
+- [ ] 병합 여부(`boolean merged`) 기록
+- [ ] 빈 칸 여부 확인 메서드 `isEmpty()` 구현
+- [ ] 다른 타일과 병합 가능 여부 확인 메서드 `canMergeWith(Tile other)` 구현
+- [ ] 병합 처리 메서드 `merge()` 구현 (값 두 배, merged=true)
+- [ ] 새 값 생성 메서드 `spawn(int value)` 구현 (빈 칸에 2 또는 4 값 생성)
+- [ ] 값 변경 시 배경색/텍스트 색상 반환 메서드 `getBackgroundColor()`, `getTextColor()` 구현
+- [ ] 병합 여부 초기화 메서드 `resetMerged()` 구현 (턴 종료 후 호출)
 
 ---
 
-## 개발 일정
+### 3. 보드 클래스 (Board)
 
-| 단계 | 기간 | 주요 내용 |
-| --- | --- | --- |
-| 프로젝트 세팅 | 11.06 ~ 11.07 | 킥오프 미팅, 브랜치 전략, 컨벤션, 초기 구조 세팅 |
-| 구현 목록 설계 | 11.08 ~ 11.09 | 기능 구현 목록 작성 |
-| 기능별 개발 | 11.08 ~ 11.18 | 각 기능 구현 및 테스트 |
-| 통합 및 검증 | 11.18 ~ 11.25 | 게임 통합, 리팩토링, 문서화 |
-
----
-
-## 팀원
-
-<table>
-<tr>
-<td align="center"><img src="https://avatars.githubusercontent.com/u/152263125?v=4" width="100px"></td>
-<td align="center"><img src="https://avatars.githubusercontent.com/u/92612072?v=4" width="100px"></td>
-<td align="center"><img src="https://avatars.githubusercontent.com/u/207679446?v=4" width="100px"></td>
-<td align="center"><img src="https://avatars.githubusercontent.com/u/66647057?v=4" width="100px"></td>
-</tr>
-<tr>
-<td align="center"><a href="https://github.com/kimsz123456">김지승</a> <br>BE</td>
-<td align="center"><a href="https://github.com/onaflw">최한송</a> <br>BE</td>
-<td align="center"><a href="https://github.com/Rhw0213">류현우</a> <br>BE</td>
-<td align="center"><a href="https://github.com/K-KY">김규영</a> <br>BE</td>
-</tr>
-</table>
+- [ ] Tile[][] 배열로 보드 상태 저장
+- [ ] 보드 초기화 (빈 칸 + 시작 타일 2개 스폰)
+- [ ] 방향별 이동/병합 메서드 구현 (up, down, left, right)
+    - [ ] 이동 시 빈 칸으로 이동
+    - [ ] merge 가능한 타일끼리 병합
+    - [ ] merge 후 merged 플래그 처리
+    - [ ] merge된 값 반환 (GameModel에서 점수 계산용)
+- [ ] 이동 가능 여부 체크 메서드 구현 (게임 종료 판단용)
+- [ ] 빈 칸 리스트 반환 메서드 구현 (새 타일 스폰용)
+- [ ] 랜덤 타일 스폰 메서드 구현 (값 2 또는 4)
+- [ ] 보드 리셋 메서드 구현 (턴 종료 후 merged 플래그 초기화)
+- [ ] 보드 상태 반환/조회 메서드 구현 (View에서 그리기용)
 
 ---
 
-## ⚙️ 기술 스택
+### 4. 모델 (2048Model)
 
-- Language: **Java 21**
-- Build Tool: **Gradle**
-- Version Control: **Git / GitHub**
-- GUI: **Swing**
+- [ ] Board 객체 포함
+- [ ] 현재 점수(int score) 관리
+- [ ] 이동/병합 메서드 제공 (up, down, left, right)
+    - [ ] Board 이동/merge 호출
+    - [ ] 이동 성공 시 Board의 새 타일 스폰 메서드 호출
+    - [ ] Board에서 반환된 merge 값으로 점수 갱신
+- [ ] 게임 종료 여부 체크 메서드 제공 (더 이상 이동/merge 불가)
+- [ ] 보드 상태 반환 메서드 제공 (View에서 그리기용)
+- [ ] 점수 반환 메서드 제공
+- [ ] 모델 초기화/리셋 메서드 제공 (Board 초기화 + 점수 0)
+
+---
+
+### 5. 컨트롤러 (2048Controller)
+
+- [ ] GameModel 객체 포함
+- [ ] GameView 객체 포함
+- [ ] KeyListener를 GameView에 등록
+    - [ ] 방향키(up/down/left/right) 입력 시 GameModel 이동/병합 호출
+    - [ ] 이동 성공 시 View repaint 호출
+    - [ ] 이동 불가 시 상태 유지
+- [ ] 게임 종료 또는 승리 판단 후 View에 메시지 전달
+- [ ] “New Game” 버튼 클릭 시 GameModel 초기화 + View 리셋
+- [ ] 점수/게임 상태 변경 시 View 업데이트 호출
+
+---
+
+### 6. 뷰 (2048View)
+
+- [ ] JPanel 상속, Swing 기반 화면 구성
+- [ ] paintComponent(Graphics g)에서 Board(Tile[][]) 상태 렌더링
+- [ ] 타일 숫자 값에 따라 배경색/글자색/폰트 크기 적용
+- [ ] 상단에 현재 점수 및 최고 점수 표시
+- [ ] 승리(2048 달성) 또는 게임 종료(더 이상 이동 불가) 메시지 출력
+- [ ] 키보드 이벤트를 Controller로 전달
+- [ ] “New Game” 버튼 클릭 이벤트를 Controller로 전달
+- [ ] 보드 및 타일 픽셀 위치/크기 계산용 유틸 메서드
+- [ ] 타일 색상/글자색 계산 유틸 (Tile enum 또는 메서드 참조)
+
+---
