@@ -20,21 +20,33 @@
 
 ### 1. 게임 인터페이스 (2048)
 
-- [ ] `start()` 호출 시 게임 시작
-- [ ] `getName()` 호출 시 `"2048"` 반환
+- [x] `start()` 호출 시 게임 시작
+- [x] `getName()` 호출 시 `"2048"` 반환
 
 ---
 
 ### 2. 타일 클래스 (Tile)
 
-- [ ] 숫자 값(`int number`) 저장
-- [ ] 병합 여부(`boolean merged`) 기록
-- [ ] 빈 칸 여부 확인 메서드 `isEmpty()` 구현
-- [ ] 다른 타일과 병합 가능 여부 확인 메서드 `canMergeWith(Tile other)` 구현
-- [ ] 병합 처리 메서드 `merge()` 구현 (값 두 배, merged=true)
-- [ ] 새 값 생성 메서드 `spawn(int value)` 구현 (빈 칸에 2 또는 4 값 생성)
-- [ ] 값 변경 시 배경색/텍스트 색상 반환 메서드 `getBackgroundColor()`, `getTextColor()` 구현
-- [ ] 병합 여부 초기화 메서드 `resetMerged()` 구현 (턴 종료 후 호출)
+- [x] 숫자 값(`int number`) 저장
+- [x] 병합 여부(`boolean merged`) 기록
+- [x] 빈 칸 여부 확인 메서드 `isEmpty()` 구현
+- [x] 다른 타일과 병합 가능 여부 확인 메서드 `canMergeWith(Tile other)` 구현
+- [x] 병합 처리 메서드 `merge()` 구현 (값 두 배, merged=true)
+- [x] 새 값 생성 메서드 `spawn(int value)` 구현 (빈 칸에 2 또는 4 값 생성)
+- [x] 값 변경 시 배경색/텍스트 색상 반환 메서드 `getBackgroundColor()`, `getTextColor()` 구현
+- [x] 병합 여부 초기화 메서드 `resetMerged()` 구현 (턴 종료 후 호출)
+
+### 2-1. 타일 타입 Enum (TileType)
+
+- [x] 타일 값별 enum 상수 정의 (EMPTY, TWO, FOUR, ... TWO_THOUSAND_FORTY_EIGHT)
+- [x] 각 enum 상수에 값(int value) 저장
+- [x] 각 enum 상수에 배경색(Color backgroundColor) 저장
+- [x] 각 enum 상수에 텍스트 색상(Color textColor) 저장
+- [x] 숫자 값으로 TileType 찾는 메서드 `fromValue(int number)` 구현
+- [x] 배경색 반환 메서드 `getBackgroundColor()` 구현
+- [x] 텍스트 색상 반환 메서드 `getTextColor()` 구현
+
+---
 
 ---
 
