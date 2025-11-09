@@ -82,16 +82,32 @@ startButton.addActionListener(new ActionListener() {
 
 ## 기능 목록
 
-### 📌 사용자
+### 📌 GameBoxFrame
 
-- [ ] 사용자는 게임을 시작하기 위해 게임 창을 실행한다.
-- [ ] 사용자는 원하는 게임을 선택한다.
-- [ ] 사용자는 게임 종료 후 리셋 버튼을 눌러 게임을 초기화할 수 있다.
+- [x] 프레임 기본 세팅을 한다.
+  - [x] 창 사이즈 (사이즈는 사용자가 조절할 수 없음)
+  - [x] 프레임 레이아웃 설정
+    - [x] GridLayout으로 패널 2개를 위아래로 배치한다.
+- [x] 프레임에 패널을 추가한다.
 
-### 📌 게임 보드
+### 📌 Panel
 
-- [ ] 크기, 제목, 종료 방식 등을 설정한다.
-  - ex) `setTitle("2048")`, `setSize(600, 600)`, `setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)`
+- `BackgroundPanel`
+  - [x] 텍스트를 추가한다.
+    - title: 게임 제목
+    - selectGame: "게임을 선택하세요."
+  - [x] 패널 레이아웃 설정 ➡ GridLayout
+  - [x] 텍스트들을 패널에 추가한다.
+- `GameButtonPanel`
+  - [x] 패널 레이아웃 설정 ➡ null (Component들의 사이즈와 위치를 직접 지정)
+  - [x] 버튼을 추가한다.
+    - 2048
+    - 같은 그림 찾기
+  - [x] 버튼의 사이즈와 위치를 설정한다.
+  - [x] 패널에 버튼을 추가한다.
+
+
+
 - [ ] 각 게임의 보드를 그리드로 생성한다.
   - [ ] 2048: 4x4 그리드
   - [ ] 같은 그림 찾기: 4x4 / 6x6 / 8x8
