@@ -1,15 +1,19 @@
-package gamebox.view;
+package gamebox.view.homeScreen;
+
+import gamebox.controller.GameBoxListener;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
 public class GameBoxFrame extends JFrame {
+    private final JPanel contentPanel = new JPanel();
     private static final BackgroundPanel backGroundPanel = new BackgroundPanel();
     private static final GameButtonPanel gameSelectButtonPanel = new GameButtonPanel();
 
     public GameBoxFrame(){
         setInit();
-        setLayout(new GridLayout(2, 1));
+        addGameButtonListener();
         addPanels();
     }
 
@@ -21,8 +25,15 @@ public class GameBoxFrame extends JFrame {
         setVisible(true);
     }
 
+    private void addGameButtonListener(){
+        gameSelectButtonPanel.addGameButtonListener(new GameBoxListener(contentPanel) {
+        });
+    }
+
     private void addPanels(){
-        add(backGroundPanel);
-        add(gameSelectButtonPanel);
+        contentPanel.setLayout(new BorderLayout());
+        contentPanel.add(backGroundPanel, BorderLayout.NORTH);
+        contentPanel.add(gameSelectButtonPanel, BorderLayout.CENTER);
+        add(contentPanel);
     }
 }

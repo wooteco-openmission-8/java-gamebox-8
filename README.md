@@ -106,6 +106,10 @@ startButton.addActionListener(new ActionListener() {
   - [x] 버튼의 사이즈와 위치를 설정한다.
   - [x] 패널에 버튼을 추가한다.
 
+### 📌 Listener
+
+- [x] 사용자가 원하는 게임을 누르면 해당 게임으로 이동한다.
+- [ ]
 
 
 - [ ] 각 게임의 보드를 그리드로 생성한다.

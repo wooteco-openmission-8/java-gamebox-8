@@ -1,7 +1,10 @@
-package gamebox.view;
+package gamebox.view.homeScreen;
+
+import gamebox.controller.GameBoxListener;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
 public class GameButtonPanel extends JPanel{
     private static final JButton game2048Button = new JButton("2048");
@@ -12,6 +15,7 @@ public class GameButtonPanel extends JPanel{
         setLayout(null);
         setButtonSize();
         setButtonLocation();
+//        addListener();
         addComponents();
     }
 
@@ -21,12 +25,17 @@ public class GameButtonPanel extends JPanel{
     }
 
     private void setButtonLocation(){
-        game2048Button.setLocation(425, 0);
-        gameSamePicButton.setLocation(425, 100);
+        game2048Button.setLocation(425, 100);
+        gameSamePicButton.setLocation(425, 200);
     }
 
     private void addComponents(){
         add(game2048Button);
         add(gameSamePicButton);
+    }
+
+    public void addGameButtonListener(ActionListener listener){
+        game2048Button.addActionListener(listener);
+        gameSamePicButton.addActionListener(listener);
     }
 }

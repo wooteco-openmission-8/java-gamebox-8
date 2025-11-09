@@ -1,4 +1,4 @@
-package gamebox.view;
+package gamebox.view.homeScreen;
 
 import javax.swing.*;
 import java.awt.*;
