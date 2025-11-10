@@ -116,4 +116,8 @@ public class Tile {
     public String toString() {
         return isEmpty() ? "." : String.valueOf(number);
     }
+
+    public static Tile Default() {
+        return new Tile(0);
+    }
 }
