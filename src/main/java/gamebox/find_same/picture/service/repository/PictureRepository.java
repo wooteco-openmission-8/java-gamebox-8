@@ -3,6 +3,8 @@ package gamebox.find_same.picture.service.repository;
 import gamebox.find_same.picture.service.entity.Picture;
 import gamebox.util.exceptions.KeyDuplicatedException;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,5 +42,9 @@ public class PictureRepository {
     public void deleteById(int id) {
         isIdExist(id);
         pictureMap.remove(id);
+    }
+
+    public Collection<Picture> findAll(){
+        return Collections.unmodifiableCollection(pictureMap.values());
     }
 }
