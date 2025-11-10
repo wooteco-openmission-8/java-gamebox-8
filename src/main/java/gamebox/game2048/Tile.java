@@ -106,7 +106,7 @@ public class Tile {
      * @param value 생성할 값 (2 또는 4)
      */
     public void spawn(int value) {
-        if (isEmpty() || number == 0) {
+        if (isEmpty()) {
             this.number = value;
             this.merged = false;
         }
