@@ -4,7 +4,7 @@ import gamebox.common.Game;
 import gamebox.find_same.game.model.Board;
 import gamebox.find_same.game.service.GameService;
 
-import gamebox.util.exceptions.Difficulty;
+import gamebox.util.Difficulty;
 import java.util.Optional;
 
 public class GameController implements Game {
