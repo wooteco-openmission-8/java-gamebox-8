@@ -40,6 +40,10 @@ public enum TileValue {
                 return tv;
             }
         }
-        return null;
+        return Default();
+    }
+
+    public static TileValue Default() {
+        return fromValue(0);
     }
 }
