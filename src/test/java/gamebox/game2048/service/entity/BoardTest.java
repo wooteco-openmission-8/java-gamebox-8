@@ -57,4 +57,72 @@ class BoardTest {
         }
         assertThat(empty).isEqualTo(0);
     }
+
+    @Test
+    @DisplayName("보드 생성 시 타일 2개 생성")
+    void initTwoTiles() {
+        int tileCount = 0;
+
+        Board board = new Board(4, 4);
+        for (int r = 0; r < 4; r++) {
+            for (int c = 0; c < 4; c++) {
+                Tile tile = board.get(r, c);
+                if (tile.getNumber() != 0) {
+                    tileCount++;
+                }
+            }
+        }
+
+        assertThat(tileCount).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("upTile 테스트")
+    void testUpTile() {
+        Board board = new Board(4, 4);
+
+        int[][] initial = {
+                {0, 0, 0, 0},
+                {2, 0, 4, 0},
+                {2, 0, 0, 0},
+                {2, 0, 2, 0}
+        };
+        board.loadFrom(initial);
+
+        board.upTile();
+
+        int[][] expected = {
+                {4, 0, 4, 0},
+                {2, 0, 2, 0},
+                {0, 0, 0, 0},
+                {0, 0, 0, 0}
+        };
+
+        assertThat(board.snapshotNumbers()).isDeepEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("downTile 테스트")
+    void testDownTile() {
+        Board board = new Board(4, 4);
+
+        int[][] initial = {
+                {0, 0, 0, 0},
+                {2, 0, 4, 0},
+                {2, 0, 0, 0},
+                {2, 0, 2, 0}
+        };
+        board.loadFrom(initial);
+
+        board.downTile();
+
+        int[][] expected = {
+                {0, 0, 0, 0},
+                {0, 0, 0, 0},
+                {2, 0, 4, 0},
+                {4, 0, 2, 0}
+        };
+
+        assertThat(board.snapshotNumbers()).isDeepEqualTo(expected);
+    }
 }
