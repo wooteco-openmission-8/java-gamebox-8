@@ -10,47 +10,35 @@ public class Board {
     private final List<Card> cards = new ArrayList<>();
     private Card firstOpen, secondOpen;
     private int moves, matches;
+    private boolean waiting = false;
 
-    public Board(int rows, int cols){
-        if ((rows*cols) % 2 != 0){
+    public Board(int rows, int cols) {
+        if ((rows * cols) % 2 != 0) {
             throw new IllegalArgumentException("[Error] 보드판은 짝수형이어야 합니다.");
         }
         this.rows = rows;
         this.cols = cols;
     }
 
-    public void initWithPictureIds(List<Integer> pictureIds){
-        // 카드 섞기.
-        int idCounter = 1;
-        for (int pid : pictureIds){
-            cards.add(new Card(idCounter++, pid, 0, 0));
-            cards.add(new Card(idCounter++, pid, 0, 0));
+    public void initWithPictureIds(List<Integer> pictureIds) {
+        for (int pid : pictureIds) {
+            cards.add(new Card(pid));
+            cards.add(new Card(pid));
         }
         Collections.shuffle(cards);
-
-        // 카드로 좌표 채우기.
-        int index = 0;
-        for (int r=0; r<rows; r++){
-            for (int c=0; c<cols; c++){
-                Card currentCard = cards.get(index++);
-                cards.set(index-1, new Card(currentCard.getId(), currentCard.getPictureId(), r, c));
-            }
-        }
         firstOpen = secondOpen = null;
         moves = matches = 0;
     }
 
-    public Optional<Boolean> flip(int row, int col){
-        Card target = get(row, col);
-        if (target == null || target.isMatched()){
-            return Optional.empty();
-        }
-        if (firstOpen != null && secondOpen != null){
-            return Optional.empty();
-        }
+    public Optional<Boolean> flip(int index) {
+        if (waiting) return Optional.empty();
+
+        Card target = get(index);
+        if (target.isMatched()) return Optional.empty();
+        if (target == firstOpen) return Optional.empty();
 
         target.flip();
-        if (firstOpen == null){
+        if (firstOpen == null) {
             firstOpen = target;
             return Optional.empty();
         }
@@ -58,39 +46,51 @@ public class Board {
         moves++;
 
         boolean matched = firstOpen.samePicture(secondOpen);
-        if (matched){
+        if (matched) {
             firstOpen.setMatched();
             secondOpen.setMatched();
             matches++;
+            firstOpen = null;
+            secondOpen = null;
+        } else {
+            waiting = true;
         }
-        Optional<Boolean> result = Optional.of(matched);
-        firstOpen = null;
-        secondOpen = null;
 
-        return result;
+        return Optional.of(matched);
     }
 
-    private Card get(int row, int col){
-        return (Card) cards.stream().filter(card -> card.getRow()==row && card.getCol()==col);
+    private Card get(int index) {
+        if (index < 0 || index >= cards.size()) {
+            throw new IndexOutOfBoundsException("[Error] 유효하지 않은 카드 인덱스입니다: " + index);
+        }
+        return cards.get(index);
     }
 
-    public boolean gameOver(){
+    public boolean gameOver() {
         return matches * 2 == cards.size();
     }
 
-    public int getMoves(){
+    public int getMoves() {
         return moves;
     }
 
-    public List<Card> getCards(){
+    public List<Card> getCards() {
         return Collections.unmodifiableList(cards);
     }
 
-    public int getRows(){
+    public int getRows() {
         return rows;
     }
 
-    public int getCols(){
+    public int getCols() {
         return cols;
+    }
+
+    public void resetUnmatched() {
+        if (firstOpen != null && !firstOpen.isMatched()) firstOpen.flip();
+        if (secondOpen != null && !secondOpen.isMatched()) secondOpen.flip();
+        firstOpen = null;
+        secondOpen = null;
+        waiting = false;
     }
 }
