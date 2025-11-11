@@ -89,6 +89,31 @@ public class Board {
         }
     }
 
+    public void downTile() {
+        mergeNumbersWhenDownTile();
+        while (moveTilesWhenDownTile()) {
+
+        }
+    }
+
+    /**
+     * 위로 올렸을 때, 합칠 수 있는 숫자를 합침
+     */
+    private void mergeNumbersWhenUpTile() {
+        for (int c=0; c<board.length; c++) {
+            if (hasAtLeastTwoTilesInColumn(c)) {
+                List<Tile> mergableTiles = getMergableTilesWhenUpTile(c);
+                Tile aboveTile = mergableTiles.get(0);
+                Tile bottomTile = mergableTiles.get(1);
+
+                if (hasSameNumber(aboveTile, bottomTile)) {
+                    aboveTile.mergeWith(bottomTile);
+                    bottomTile.delete();
+                }
+            }
+        }
+    }
+
     /**
      * 타일을 위로 올리는 함수
      * @return 이동한 타일이 있는지
@@ -110,28 +135,10 @@ public class Board {
     }
 
     /**
-     * 위로 올렸을 때, 합칠 수 있는 숫자를 합침
-     */
-    private void mergeNumbersWhenUpTile() {
-        for (int c=0; c<board.length; c++) {
-            if (hasAtLeastTwoTilesInColumn(c)) {
-                List<Tile> mergableTiles = getMergableTiles(c);
-                Tile aboveTile = mergableTiles.get(0);
-                Tile bottomTile = mergableTiles.get(1);
-
-                if (hasSameNumber(aboveTile, bottomTile)) {
-                    aboveTile.mergeWith(bottomTile);
-                    bottomTile.delete();
-                }
-            }
-        }
-    }
-
-    /**
      * @param c 열 번호
      * 합쳐질 수 있는 위에 타일과 아래 타일을 설정.
      */
-    private List<Tile> getMergableTiles(int c) {
+    private List<Tile> getMergableTilesWhenUpTile(int c) {
         List<Tile> mergableTiles = new ArrayList<>();
         for (int r = 0; r < board.length; r++) {
             Tile currentTile = get(r, c);
@@ -146,6 +153,62 @@ public class Board {
 
         return mergableTiles;
     }
+
+    private void mergeNumbersWhenDownTile() {
+        for (int c=0; c<board.length; c++) {
+            if (hasAtLeastTwoTilesInColumn(c)) {
+                List<Tile> mergableTiles = getMergableTilesWhenDownTile(c);
+                Tile bottomTile = mergableTiles.get(0);
+                Tile aboveTile = mergableTiles.get(1);
+
+                if (hasSameNumber(bottomTile, aboveTile)) {
+                    bottomTile.mergeWith(aboveTile);
+                    aboveTile.delete();
+                }
+            }
+        }
+    }
+
+    /**
+     * @param c 열 번호
+     * 합쳐질 수 있는 위에 타일과 아래 타일을 설정.
+     */
+    private List<Tile> getMergableTilesWhenDownTile(int c) {
+        List<Tile> mergableTiles = new ArrayList<>();
+        for (int r = board.length-1; r >= 0; r--) {
+            Tile currentTile = get(r, c);
+            if (currentTile.getNumber() != 0) {
+                mergableTiles.add(currentTile);
+            }
+
+            if (mergableTiles.size() == 2) {
+                break;
+            }
+        }
+
+        return mergableTiles;
+    }
+
+    /**
+     * 타일을 위로 올리는 함수
+     * @return 이동한 타일이 있는지
+     */
+    private boolean moveTilesWhenDownTile() {
+        boolean movedAny = false;
+
+        for (int r=board.length-2; r>=0; r--) {
+            for (int c=0; c<board.length; c++) {
+                Tile targetTile = get(r+1, c);
+                Tile currentTile = get(r, c);
+                if (currentTile.moveTo(targetTile)) {
+                    movedAny = true;
+                }
+            }
+        }
+
+        return movedAny;
+    }
+
 
     /**
      * @param c 열 번호
@@ -173,8 +236,6 @@ public class Board {
         return aboveTile.getNumber() == bottomTile.getNumber();
     }
 
-    public void downTile() {
-    }
 
     public void leftTile() {
     }
