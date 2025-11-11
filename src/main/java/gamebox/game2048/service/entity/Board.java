@@ -35,7 +35,7 @@ public class Board {
 
             if (Objects.equals(get(x, y).getNumber(), 0)) {
                 Tile tile = get(x, y);
-                tile.spawn(2);
+                tile.spawn();
                 board[x][y] = tile;
             }
         }

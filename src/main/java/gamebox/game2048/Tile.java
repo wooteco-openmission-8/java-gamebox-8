@@ -6,6 +6,8 @@ import java.awt.Color;
  * 2048 게임의 개별 타일을 나타내는 클래스
  */
 public class Tile {
+    private static final double PROBABILITY_OF_SPAWN_2 = 0.9;
+
     private int number;        // 타일의 숫자 값 (0은 빈 칸)
     private boolean merged;    // 현재 턴에 병합되었는지 여부
 
@@ -103,11 +105,19 @@ public class Tile {
     /**
      * 빈 칸에 새로운 값 생성
      *
-     * @param value 생성할 값 (2 또는 4)
+     * 90% 확률로 2를 생성.
+     * 나머지 10%는 4 생성.
+     *
      */
-    public void spawn(int value) {
+    public void spawn() {
         if (isEmpty()) {
-            this.number = value;
+            double probability = Math.random();
+
+            this.number = 4;
+            if (probability <= PROBABILITY_OF_SPAWN_2) {
+                this.number = 2;
+            }
+
             this.merged = false;
         }
     }
