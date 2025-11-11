@@ -1,57 +1,70 @@
-# Swing 구현
+# 🎮 2048
 
-## 학습 목표
+##  게임 규칙 (Game Rules)
 
-- Java Swing을 활용해 **그래픽 기반 GUI 애플리케이션**을 설계하고 구현한다.
-- **이벤트 기반 프로그래밍**을 이해하고, 사용자 입력(키보드/마우스)에 반응하는 구조를 만든다.
-- 공통 클래스(`GameWindow`)를 통해 **객체지향적 구조와 코드 재사용성**을 높인다.
+- 게임 보드는 4x4 격자입니다.
 
----
+1. 시작 시, 무작위 두 칸에 2 또는 4가 생성됩니다.
+2. 방향키(↑, ↓, ←, →) 입력 시:
 
-## Swing 기본 구조
+   - 모든 타일이 해당 방향으로 이동합니다.
+   - 같은 숫자의 타일이 충돌하면 합쳐져 두 배의 숫자가 됩니다.
+   - 한 번의 이동에서 같은 타일은 한 번만 합칠 수 있습니다.
 
-Swing의 기본 구조는 크게 컨테이너(Container), 컴포넌드(Component), 그리고 레이아웃(Layout)으로 나눠진다.
+3. 이동 후 빈 칸이 있다면, 무작위로 2 또는 4가 새로 생성됩니다.
 
-### 1. 컨테이너 (Container)
+4. 더 이상 이동할 수 있는 공간이 없다면 게임이 종료됩니다.
+5. 2048 타일을 만들면 승리합니다.
 
-컨테이너는 다른 컴포넌트들을 **담고 관리**하는 역할을 한다. `JFrame`이라는 최상위 컨테이너를 사용하여 애플리케이션 창을 만든다.
+##  기능 구현 목록
+
+### 1. 게임 인터페이스 (2048)
+
+- [x] `start()` 호출 시 게임 시작
+- [x] `getName()` 호출 시 `"2048"` 반환
 
 - **JFrame:** 애플리케이션의 **기본 창**을 만드는 클래스이다. 가장 바깥 창이 `JFrame`이 된다.
 - **JPanel:** 하나의 **부분적인 컨테이너**로, 여러 UI 컴포넌트를 포함할 수 있는 영역을 만든다. `JFrame` 안에 여러 개의 `JPanel`을 배치하여 UI를 세분화할 수 있다.
 
-ex)
-```angular2html
-JFrame frame = new JFrame("Game Window");
-frame.setSize(600, 600); // 창의 크기 설정
-frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // 창을 닫을 때 애플리케이션 종료
-frame.setVisible(true); // 창을 보이게 설정
-```
+### 2. 타일 클래스 (Tile)
 
-![JFrame과 JPanel의 구조](JFrame_JPanel_structure.png)
+- [x] 숫자 값(`int number`) 저장
+- [x] 병합 여부(`boolean merged`) 기록
+- [x] 빈 칸 여부 확인 메서드 `isEmpty()` 구현
+- [x] 다른 타일과 병합 가능 여부 확인 메서드 `canMergeWith(Tile other)` 구현
+- [x] 병합 처리 메서드 `merge()` 구현 (값 두 배, merged=true)
+- [x] 새 값 생성 메서드 `spawn()` 구현 (빈 칸에 2 또는 4 값 생성)
+- [x] 값 변경 시 배경색/텍스트 색상 반환 메서드 `getBackgroundColor()`, `getTextColor()` 구현
+- [x] 병합 여부 초기화 메서드 `resetMerged()` 구현 (턴 종료 후 호출)
 
-### 2. 컴포넌트 (Component)
+### 2-1. 타일 타입 Enum (TileType)
+
+- [x] 타일 값별 enum 상수 정의 (EMPTY, TWO, FOUR, ... TWO_THOUSAND_FORTY_EIGHT)
+- [x] 각 enum 상수에 값(int value) 저장
+- [x] 각 enum 상수에 배경색(Color backgroundColor) 저장
+- [x] 각 enum 상수에 텍스트 색상(Color textColor) 저장
+- [x] 숫자 값으로 TileType 찾는 메서드 `fromValue(int number)` 구현
+- [x] 배경색 반환 메서드 `getBackgroundColor()` 구현
+- [x] 텍스트 색상 반환 메서드 `getTextColor()` 구현
 
 컴포넌트는 **GUI를 구성하는 기본 요소**로, 사용자와의 상호작용을 담당한다. 컴포넌트는 버튼, 텍스트 필드, 레이블 등 다양한 UI 요소들을 말한다.
 
-- **JButton:** 버튼 컴포넌트. 클릭 이벤트를 처리할 수 있다.
-- **JLabel:** 텍스트나 이미지를 표시하는 컴포넌트.
-- **JTextField:** 사용자가 텍스트를 입력할 수 있는 필드.
-- **JCheckBox, JRadioButton:** 체크박스나 라디오 버튼과 같은 선택 UI를 제공한다.
+---
 
-ex)
-```angular2html
-JButton startButton = new JButton("Start Game");
-JLabel scoreLabel = new JLabel("Score: 0");
-```
+### 3. 보드 클래스 (Board)
 
-### 3. 레이아웃 (Layout)
-
-레이아웃은 컴포넌트가 **어떻게 배치**될지를 결정하는 방식이다.
-
-- **FlowLayout:** 컴포넌트를 **왼쪽에서 오른쪽으로, 위에서 아래**로 순차적으로 배치한다. 기본적인 레이아웃이다.
-- **BorderLayout:** **상, 하, 좌, 우, 중앙**의 5개 영역에 컴포넌트를 배치할 수 있다.
-- **GridLayout:** 컴포넌트를 **격자 형태**로 배치한다. 지정된 행과 열 수에 맞게 컴포넌트를 배치한다.
-- **BoxLayout:** 컴포넌트를 **수평 또는 수직**으로 배치한다.
+- [x] Tile[][] 배열로 보드 상태 저장
+- [x] 보드 초기화 (빈 칸 + 시작 타일 2개 스폰)
+- [ ] 방향별 이동/병합 메서드 구현 (up, down, ... )
+    - [x] 이동 시 빈 칸으로 이동
+    - [x] merge 가능한 타일끼리 병합
+    - [ ] merge 후 merged 플래그 처리
+    - [ ] merge된 값 반환 (GameModel에서 점수 계산용)
+- [ ] 이동 가능 여부 체크 메서드 구현 (게임 종료 판단용)
+- [ ] 빈 칸 리스트 반환 메서드 구현 (새 타일 스폰용)
+- [x] 랜덤 타일 스폰 메서드 구현 (값 2 또는 4)
+- [ ] 보드 리셋 메서드 구현 (턴 종료 후 merged 플래그 초기화)
+- [ ] 보드 상태 반환/조회 메서드 구현 (View에서 그리기용)
 
 ex)
 ```angular2html
@@ -60,80 +73,47 @@ frame.add(startButton);
 frame.add(scoreLabel);
 ```
 
-### 4. 이벤트 처리
+### 4. 모델 (2048Model)
 
-Swing에서 사용자의 입력에 반응하려면 **이벤트 처리**가 필요하다. 이벤트는 사용자가 버튼을 클릭하거나, 키를 누르는 등의 동작을 의미한다.
+- [ ] Board 객체 포함
+- [ ] 현재 점수(int score) 관리
+- [ ] 이동/병합 메서드 제공 (up, down, left, right)
+    - [ ] Board 이동/merge 호출
+    - [ ] 이동 성공 시 Board의 새 타일 스폰 메서드 호출
+    - [ ] Board에서 반환된 merge 값으로 점수 갱신
+- [ ] 게임 종료 여부 체크 메서드 제공 (더 이상 이동/merge 불가)
+- [ ] 보드 상태 반환 메서드 제공 (View에서 그리기용)
+- [ ] 점수 반환 메서드 제공
+- [ ] 모델 초기화/리셋 메서드 제공 (Board 초기화 + 점수 0)
 
 - **ActionListener:** 버튼을 클릭하거나 특정 동작을 했을 때 이벤트를 처리한다.
 - **KeyListener:** 키보드 입력을 처리한다.
 - **MouseListener:** 마우스 클릭이나 드래그 등 마우스 이벤트를 처리한다.
 
-ex)
-```angular2html
-startButton.addActionListener(new ActionListener() {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        System.out.println("Game Started!");
-    }
-});
-```
+### 5. 컨트롤러 (2048Controller)
+
+- [ ] GameModel 객체 포함
+- [ ] GameView 객체 포함
+- [ ] KeyListener를 GameView에 등록
+    - [ ] 방향키(up/down/left/right) 입력 시 GameModel 이동/병합 호출
+    - [ ] 이동 성공 시 View repaint 호출
+    - [ ] 이동 불가 시 상태 유지
+- [ ] 게임 종료 또는 승리 판단 후 View에 메시지 전달
+- [ ] “New Game” 버튼 클릭 시 GameModel 초기화 + View 리셋
+- [ ] 점수/게임 상태 변경 시 View 업데이트 호출
 
 ---
 
-## 기능 목록
+### 6. 뷰 (2048View)
 
-### 📌 GameBoxFrame
+- [ ] JPanel 상속, Swing 기반 화면 구성
+- [ ] paintComponent(Graphics g)에서 Board(Tile[][]) 상태 렌더링
+- [ ] 타일 숫자 값에 따라 배경색/글자색/폰트 크기 적용
+- [ ] 상단에 현재 점수 및 최고 점수 표시
+- [ ] 승리(2048 달성) 또는 게임 종료(더 이상 이동 불가) 메시지 출력
+- [ ] 키보드 이벤트를 Controller로 전달
+- [ ] “New Game” 버튼 클릭 이벤트를 Controller로 전달
+- [ ] 보드 및 타일 픽셀 위치/크기 계산용 유틸 메서드
+- [ ] 타일 색상/글자색 계산 유틸 (Tile enum 또는 메서드 참조)
 
-- [x] 프레임 기본 세팅을 한다.
-  - [x] 창 사이즈 (사이즈는 사용자가 조절할 수 없음)
-  - [x] 프레임 레이아웃 설정
-    - [x] GridLayout으로 패널 2개를 위아래로 배치한다.
-- [x] 프레임에 패널을 추가한다.
-
-### 📌 Panel
-
-- `BackgroundPanel`
-  - [x] 텍스트를 추가한다.
-    - title: 게임 제목
-    - selectGame: "게임을 선택하세요."
-  - [x] 패널 레이아웃 설정 ➡ GridLayout
-  - [x] 텍스트들을 패널에 추가한다.
-- `GameButtonPanel`
-  - [x] 패널 레이아웃 설정 ➡ null (Component들의 사이즈와 위치를 직접 지정)
-  - [x] 버튼을 추가한다.
-    - 2048
-    - 같은 그림 찾기
-  - [x] 버튼의 사이즈와 위치를 설정한다.
-  - [x] 패널에 버튼을 추가한다.
-- `MainPanel`
-  - [x] 패널 레이아웃 설정 ➡ BorderLayout
-  - [x] 상단에 BackgroundPanel 추가
-  - [x] 중앙에 contentPanel 추가
-  - [x] 초기 화면으로 GameButtonPanel을 contentPanel에 추가
-  - [x] 버튼 클릭 시 contentPanel 교체 가능
-
-### 📌 Listener
-
-- [x] 사용자가 원하는 게임을 누르면 해당 게임으로 이동한다.
-- [x] 게임 화면에서 홈 화면으로 돌아가는 기능을 추가한다.
-    - [x] "홈" 버튼 추가
-    - [x] 버튼 클릭 시 contentPanel을 초기 상태로 복원
-
-
-- [ ] 각 게임의 보드를 그리드로 생성한다.
-  - [ ] 2048: 4x4 그리드
-  - [ ] 같은 그림 찾기: 4x4 / 6x6 / 8x8
-
-### 📌 출력기
-
-- [ ] 각 게임마다 점수를 표시한다.
-- [ ] 게임이 종료되면 결과 메세지를 표시한다.
-- [ ] 예외 상황이 발생할 경우 에러 메세지를 표시한다.
-
-### 📌 기타 UI 기능
-
-- [ ] 각 게임의 입력을 클릭 또는 키보드 이벤트로 처리한다.
-- [ ] 게임 종료 후 새 게임 시작 버튼을 통해 게임 초기화가 가능하다.
-  - [ ] 게임 보드와 점수를 초기 상태로 되돌린다.
-
-
+---
