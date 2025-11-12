@@ -36,18 +36,38 @@ public class Board {
         if (waiting) return Optional.empty();
 
         Card target = get(index);
-        if (target.isMatched()) return Optional.empty();
-        if (target == firstOpen) return Optional.empty();
+        if (target == null) {
+            return Optional.empty();
+        }
+
+        boolean setOpenedCards = selectCards(target);
+        if (!setOpenedCards) {
+            return Optional.empty();
+        }
+
+        boolean matched = setMatchedCards();
+        return Optional.of(matched);
+    }
+
+    private boolean selectCards(Card target) {
+        if (target.isMatched() || target == firstOpen) {
+            return false;
+        }
 
         target.flip();
         if (firstOpen == null) {
             firstOpen = target;
-            return Optional.empty();
+            return false;
         }
         secondOpen = target;
         moves++;
 
+        return true;
+    }
+
+    private boolean setMatchedCards() {
         boolean matched = firstOpen.samePicture(secondOpen);
+
         if (matched) {
             firstOpen.setMatched();
             secondOpen.setMatched();
@@ -58,12 +78,12 @@ public class Board {
             waiting = true;
         }
 
-        return Optional.of(matched);
+        return matched;
     }
 
     private Card get(int index) {
         if (index < 0 || index >= cards.size()) {
-            throw new IndexOutOfBoundsException("[Error] 유효하지 않은 카드 인덱스입니다: " + index);
+            throw new IndexOutOfBoundsException(ErrorType.INVALID_INDEX.getMessage() + index);
         }
         return cards.get(index);
     }
