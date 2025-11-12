@@ -1,5 +1,7 @@
 package gamebox.find_same.game.model;
 
+import gamebox.util.exceptions.ErrorType;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -14,7 +16,7 @@ public class Board {
 
     public Board(int rows, int cols) {
         if ((rows * cols) % 2 != 0) {
-            throw new IllegalArgumentException("[Error] 보드판은 짝수형이어야 합니다.");
+            throw new IllegalArgumentException(ErrorType.INVALID_BOARD_SIZE.getMessage());
         }
         this.rows = rows;
         this.cols = cols;
