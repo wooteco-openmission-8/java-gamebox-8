@@ -111,6 +111,16 @@ startButton.addActionListener(new ActionListener() {
     - [x] 중앙에 contentPanel 추가
     - [x] 초기 화면으로 GameButtonPanel을 contentPanel에 추가
     - [x] 버튼 클릭 시 contentPanel 교체 가능
+- `Game2048Panel`
+    - [x] 패널 레이아웃 설정 ➡ BorderLayout
+    - [x] `resetPanel` (BorderLayout.NORTH)
+        - [x] 리셋 버튼 추가
+        - [x] 리셋 버튼을 누르면 보드를 다시 그린다.
+    - [x] `gamePanel` (BorderLayout.CENTER)
+        - [x] 패널 레이아웃 설정 ➡ GridLayout
+        - [x] 보드 그리기 (랜덤 위치에 2 또는 4 타일 2개 생성)
+        - [x] keyListener 추가
+        - [x] 위, 아래, 왼쪽, 오른쪽 방향키를 누르면 해당 방향으로 이동한다.
 
 ### 📌 Listener
 
