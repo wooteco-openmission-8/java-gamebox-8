@@ -7,7 +7,6 @@ import java.awt.Color;
  */
 public class Tile {
     private static final double PROBABILITY_OF_SPAWN_2 = 0.9;
-
     private int number;        // 타일의 숫자 값 (0은 빈 칸)
     private boolean merged;    // 현재 턴에 병합되었는지 여부
 
@@ -98,6 +97,10 @@ public class Tile {
      * @return 병합된 값이 들어간 새로운 타일
      */
     public Tile merge(Tile other) {
+        if (this.number != other.number) {
+            return this;
+        }
+
         int newNumber = this.number + other.number;
         return new Tile(newNumber);//현재 타일 반환
     }

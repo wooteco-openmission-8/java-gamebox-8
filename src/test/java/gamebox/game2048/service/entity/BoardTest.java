@@ -15,15 +15,6 @@ class BoardTest {
         Board board = new Board(4, 4);
         assertThat(board).isInstanceOf(Board.class);
     }
-
-    @Test
-    @DisplayName("기본값 반환 테스트")
-    void getBoardTileTest() {
-        Board board = new Board(4, 4);
-        Tile tile = board.get(0, 0);
-        assertThat(tile.getNumber()).isEqualTo(0);
-    }
-
     @Test
     @DisplayName("보드 생성시 최초에 적어도 한개의 타일이 생성된다.")
     void atLeastOneTile() {
@@ -49,13 +40,34 @@ class BoardTest {
         int empty = 0;
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                Tile tile = board.get(j, i);
+                Tile tile = board.get(i, j);
                 if (tile.getNumber() == 0) {
                     empty++;
                 }
             }
         }
         assertThat(empty).isEqualTo(0);
+
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                Tile tile = board.get(i, j);
+                System.out.print(tile.getNumber() + " ");
+            }
+            System.out.println();
+        }
+
+        board.upTile();
+
+        System.out.println("BoardTest.test");
+
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                Tile tile = board.get(i, j);
+                System.out.print(tile.getNumber() + " ");
+            }
+            System.out.println();
+        }
+
     }
 
     @Test
@@ -77,52 +89,180 @@ class BoardTest {
     }
 
     @Test
-    @DisplayName("upTile 테스트")
-    void testUpTile() {
+    @DisplayName("Tile 이동 및 병합 테스트")
+    void tileMoveTest() {
         Board board = new Board(4, 4);
 
+        // 초기 상태
         int[][] initial = {
-                {0, 0, 0, 0},
-                {2, 0, 4, 0},
-                {2, 0, 0, 0},
-                {2, 0, 2, 0}
+                {2, 2, 2, 4},
+                {2, 2, 4, 2},
+                {2, 4, 2, 2},
+                {4, 2, 2, 2}
         };
+
+        // ------------------- upTile 테스트 -------------------
         board.loadFrom(initial);
-
         board.upTile();
-
-        int[][] expected = {
-                {4, 0, 4, 0},
-                {2, 0, 2, 0},
-                {0, 0, 0, 0},
+        int[][] upExpected = {
+                {4, 4, 2, 4},
+                {2, 4, 4, 4},
+                {4, 2, 4, 2},
                 {0, 0, 0, 0}
         };
+        assertThat(board.snapshotNumbers()).isDeepEqualTo(upExpected);
 
-        assertThat(board.snapshotNumbers()).isDeepEqualTo(expected);
+        // ------------------- downTile 테스트 -------------------
+        board.loadFrom(initial);
+        board.downTile();
+        int[][] downExpected = {
+                {0, 0, 0, 0},
+                {2, 4, 2, 4},
+                {4, 4, 4, 2},
+                {4, 2, 4, 4}
+        };
+        assertThat(board.snapshotNumbers()).isDeepEqualTo(downExpected);
+
+        // ------------------- leftTile 테스트 -------------------
+        board.loadFrom(initial);
+        board.leftTile();
+        int[][] leftExpected = {
+                {4, 2, 4, 0},
+                {4, 4, 2, 0},
+                {2, 4, 4, 0},
+                {4, 4, 2, 0}
+        };
+        assertThat(board.snapshotNumbers()).isDeepEqualTo(leftExpected);
+
+        // ------------------- rightTile 테스트 -------------------
+        board.loadFrom(initial);
+        board.rightTile();
+        int[][] rightExpected = {
+                {0, 2, 4, 4},
+                {0, 4, 4, 2},
+                {0, 2, 4, 4},
+                {0, 4, 2, 4}
+        };
+        assertThat(board.snapshotNumbers()).isDeepEqualTo(rightExpected);
     }
 
     @Test
-    @DisplayName("downTile 테스트")
-    void testDownTile() {
+    @DisplayName("upTile 이동 가능 테스트")
+    void upTileMovable() {
         Board board = new Board(4, 4);
+        board.loadFrom(new int[][]{
+                {2, 0, 2, 4},
+                {2, 4, 0, 4},
+                {0, 2, 2, 0},
+                {0, 0, 0, 0}
+        });
 
-        int[][] initial = {
-                {0, 0, 0, 0},
-                {2, 0, 4, 0},
-                {2, 0, 0, 0},
-                {2, 0, 2, 0}
-        };
-        board.loadFrom(initial);
+        boolean changed = board.upTile();
+        assertThat(changed).isTrue();
+    }
 
-        board.downTile();
+    @Test
+    @DisplayName("upTile 이동 불가 테스트")
+    void upTileImmovable() {
+        Board board = new Board(4, 4);
+        board.loadFrom(new int[][]{
+                {2, 4, 2, 4},
+                {4, 2, 4, 2},
+                {2, 4, 2, 4},
+                {4, 2, 4, 2}
+        });
 
-        int[][] expected = {
-                {0, 0, 0, 0},
-                {0, 0, 0, 0},
-                {2, 0, 4, 0},
-                {4, 0, 2, 0}
-        };
+        boolean changed = board.upTile();
+        assertThat(changed).isFalse();
+    }
 
-        assertThat(board.snapshotNumbers()).isDeepEqualTo(expected);
+    @Test
+    @DisplayName("downTile 이동 가능 테스트")
+    void downTileMovable() {
+        Board board = new Board(4, 4);
+        board.loadFrom(new int[][]{
+                {2, 0, 2, 4},
+                {2, 4, 0, 4},
+                {0, 2, 2, 0},
+                {0, 0, 0, 0}
+        });
+
+        boolean changed = board.downTile();
+        assertThat(changed).isTrue();
+    }
+
+    @Test
+    @DisplayName("downTile 이동 불가 테스트")
+    void downTileImmovable() {
+        Board board = new Board(4, 4);
+        board.loadFrom(new int[][]{
+                {2, 4, 2, 4},
+                {4, 2, 4, 2},
+                {2, 4, 2, 4},
+                {4, 2, 4, 2}
+        });
+
+        boolean changed = board.downTile();
+        assertThat(changed).isFalse();
+    }
+
+    @Test
+    @DisplayName("leftTile 이동 가능 테스트")
+    void leftTileMovable() {
+        Board board = new Board(4, 4);
+        board.loadFrom(new int[][]{
+                {0, 2, 2, 4},
+                {2, 0, 4, 4},
+                {0, 2, 2, 0},
+                {0, 0, 0, 0}
+        });
+
+        boolean changed = board.leftTile();
+        assertThat(changed).isTrue();
+    }
+
+    @Test
+    @DisplayName("leftTile 이동 불가 테스트")
+    void leftTileImmovable() {
+        Board board = new Board(4, 4);
+        board.loadFrom(new int[][]{
+                {2, 4, 2, 4},
+                {4, 2, 4, 2},
+                {2, 4, 2, 4},
+                {4, 2, 4, 2}
+        });
+
+        boolean changed = board.leftTile();
+        assertThat(changed).isFalse();
+    }
+
+    @Test
+    @DisplayName("rightTile 이동 가능 테스트")
+    void rightTileMovable() {
+        Board board = new Board(4, 4);
+        board.loadFrom(new int[][]{
+                {0, 2, 2, 4},
+                {2, 0, 4, 4},
+                {0, 2, 2, 0},
+                {0, 0, 0, 0}
+        });
+
+        boolean changed = board.rightTile();
+        assertThat(changed).isTrue();
+    }
+
+    @Test
+    @DisplayName("rightTile 이동 불가 테스트")
+    void rightTileImmovable() {
+        Board board = new Board(4, 4);
+        board.loadFrom(new int[][]{
+                {2, 4, 2, 4},
+                {4, 2, 4, 2},
+                {2, 4, 2, 4},
+                {4, 2, 4, 2}
+        });
+
+        boolean changed = board.rightTile();
+        assertThat(changed).isFalse();
     }
 }
