@@ -19,75 +19,21 @@ public class Game2048Panel extends JPanel {
     private TilePanel[][] tile;
     private Board board;
 
+    /**
+     * Game2048Panel = resetPanel + gamePanel
+     *
+     * resetPanel: 리셋 버튼
+     * gamePanel: 2048 게임
+     */
     public Game2048Panel() {
         setLayout(new BorderLayout());
         setFocusable(false);
 
-        resetPanel.setBackground(Color.white);
-        JButton resetButton = new JButton("reset");
-        resetButton.setFocusable(false);
-        resetButton.addActionListener(e -> {
-            int reset = JOptionPane.showConfirmDialog(
-                    this,
-                    "게임을 초기화하시겠습니까?",
-                    "확인",
-                    JOptionPane.YES_NO_OPTION
-            );
-            if (reset == JOptionPane.YES_OPTION) {
-                gamePanel.removeAll();
-                initBoard();
-                revalidate();
-                repaint();
-                SwingUtilities.invokeLater(() -> gamePanel.requestFocusInWindow());
-            }
-        });
-        resetPanel.add(resetButton);
-
-        gamePanel.setLayout(new GridLayout(GRID_SIZE, GRID_SIZE, GRID_GAP, GRID_GAP));
-        gamePanel.setBorder(new EmptyBorder(15, 15, 15, 15));
-        gamePanel.setBackground(Color.white);
-
-        initBoard();
+        setResetPanel();
+        setGamePanel();
 
         add(resetPanel, BorderLayout.NORTH);
         add(gamePanel, BorderLayout.CENTER);
-
-        // 키 입력이 가능하도록 설정.
-        gamePanel.setFocusable(true);
-        gamePanel.setFocusTraversalKeysEnabled(false);
-
-        gamePanel.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_UP) {
-                    System.out.println("위 방향키 누름");
-                    board.upTile();
-                    board.randomSpawn(1);
-                    updateBoard();
-                }
-                if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-                    System.out.println("아래 방향키 누름");
-                    board.downTile();
-                    board.randomSpawn(1);
-                    updateBoard();
-                }
-                if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-                    System.out.println("왼쪽 방향키 누름");
-                    board.leftTile();
-                    board.randomSpawn(1);
-                    updateBoard();
-                }
-                if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                    System.out.println("오른쪽 방향키 누름");
-                    board.rightTile();
-                    board.randomSpawn(1);
-                    updateBoard();
-                }
-            }
-        });
-
-        // 화면이 완전히 보인 뒤 실행하도록.
-        SwingUtilities.invokeLater(() -> gamePanel.requestFocusInWindow());
     }
 
     private void initBoard() {
@@ -124,6 +70,77 @@ public class Game2048Panel extends JPanel {
                 gamePanel.add(currentTile);
             }
         }
+    }
+
+    private void setResetPanel() {
+        resetPanel.setBackground(Color.white);
+        JButton resetButton = new JButton("reset");
+        resetButton.setFocusable(false);
+        resetButton.addActionListener(e -> {
+            int reset = JOptionPane.showConfirmDialog(
+                    this,
+                    "게임을 초기화하시겠습니까?",
+                    "확인",
+                    JOptionPane.YES_NO_OPTION
+            );
+            if (reset == JOptionPane.YES_OPTION) {
+                gamePanel.removeAll();
+                initBoard();
+                revalidate();
+                repaint();
+                SwingUtilities.invokeLater(() -> gamePanel.requestFocusInWindow());
+            }
+        });
+        resetPanel.add(resetButton);
+    }
+
+    private void setGamePanel() {
+        gamePanel.setLayout(new GridLayout(GRID_SIZE, GRID_SIZE, GRID_GAP, GRID_GAP));
+        gamePanel.setBorder(new EmptyBorder(15, 15, 15, 15));
+        gamePanel.setBackground(Color.white);
+
+        initBoard();
+
+        addKeyListener();
+
+        // 키 입력이 가능하도록 설정.
+        gamePanel.setFocusable(true);
+        gamePanel.setFocusTraversalKeysEnabled(false);
+
+        // 화면이 완전히 보인 뒤 실행하도록.
+        SwingUtilities.invokeLater(() -> gamePanel.requestFocusInWindow());
+    }
+
+    private void addKeyListener() {
+        gamePanel.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_UP) {
+                    System.out.println("위 방향키 누름");
+                    board.upTile();
+                    board.randomSpawn(1);
+                    updateBoard();
+                }
+                if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                    System.out.println("아래 방향키 누름");
+                    board.downTile();
+                    board.randomSpawn(1);
+                    updateBoard();
+                }
+                if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                    System.out.println("왼쪽 방향키 누름");
+                    board.leftTile();
+                    board.randomSpawn(1);
+                    updateBoard();
+                }
+                if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                    System.out.println("오른쪽 방향키 누름");
+                    board.rightTile();
+                    board.randomSpawn(1);
+                    updateBoard();
+                }
+            }
+        });
     }
 
     @Override
