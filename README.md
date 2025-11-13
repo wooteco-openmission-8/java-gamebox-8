@@ -78,6 +78,10 @@ frame.add(scoreLabel);
 - [ ] Board 객체 포함
 - [ ] 현재 점수(int score) 관리
 - [ ] 이동/병합 메서드 제공 (up, down, left, right)
+    - [x] Board 좌측 이동
+      - [x] 병합
+    - [x] Board 우측 이동
+      - [x] 병합
     - [ ] Board 이동/merge 호출
     - [ ] 이동 성공 시 Board의 새 타일 스폰 메서드 호출
     - [ ] Board에서 반환된 merge 값으로 점수 갱신
