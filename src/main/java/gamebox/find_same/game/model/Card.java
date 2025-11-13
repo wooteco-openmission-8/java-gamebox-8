@@ -1,11 +1,13 @@
 package gamebox.find_same.game.model;
 
+import java.util.Objects;
+
 public class Card {
-    private final int pictureId;
+    private final String pictureId;
     private boolean faceUp;
     private boolean matched;
 
-    public Card(int pictureId) {
+    public Card(String pictureId) {
         this.pictureId = pictureId;
     }
 
@@ -15,11 +17,11 @@ public class Card {
         }
     }
 
-    public boolean samePicture(Card other){ return this.pictureId == other.pictureId; }
+    public boolean samePicture(Card other){ return Objects.equals(this.pictureId, other.pictureId); }
 
     public void setMatched(){ matched = true; }
 
-    public int getPictureId(){ return pictureId; }
+    public String getPictureId(){ return pictureId; }
 
     public boolean isFaceUp(){ return faceUp; }
 

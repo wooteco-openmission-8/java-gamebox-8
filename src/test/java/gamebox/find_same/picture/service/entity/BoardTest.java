@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,7 +20,8 @@ class BoardTest {
         board = new Board(2, 2); // 2x2 보드 (카드 4장)
         // 그림 id 1,2 각각 2장씩 추가
         // 순서를 맞춰서 0,1이 같은 그림이 되도록
-        board.initWithPictureIds(List.of(1, 1)); // 0,1은 매칭 카드
+        String id = UUID.randomUUID().toString();
+        board.initWithPictureIds(List.of(id, id)); // 0,1은 매칭 카드
     }
 
     @Test
@@ -54,7 +56,7 @@ class BoardTest {
     void flipSecondCardMismatchAndReset() {
         // 실패 시나리오용 새 보드 생성 (0,1 카드 id 다르게)
         board = new Board(2, 2);
-        board.initWithPictureIds(List.of(1, 2)); // 0,1 카드 id 다르게
+        board.initWithPictureIds(List.of("1", "2")); // 0,1 카드 id 다르게
 
         int firstIndex = 0;
         int secondIndex = 1;

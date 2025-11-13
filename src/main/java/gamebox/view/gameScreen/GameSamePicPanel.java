@@ -11,15 +11,17 @@ import java.util.List;
 
 public class GameSamePicPanel extends JPanel {
     private final List<ImageButton> buttons = new ArrayList<>();
+    private boolean isLocked = false; // 버튼 안 눌리게 관리.
+
     public GameSamePicPanel() {
         setOpaque(true);
         setLayout(new BorderLayout());
         add(new JLabel("Game 같은 그림 찾기", SwingConstants.CENTER), BorderLayout.CENTER);
 
-        JPanel gridPanel = Grid.createGridPanel(5, 5);
+        JPanel gridPanel = Grid.createGridPanel(4, 4);
 
         // 테스트용 버튼 추가
-        for (int i = 0; i < 5 * 5; i++) {
+        for (int i = 0; i < 4 * 4; i++) {
             int id = i;
             //picture는 백엔드에서 받아와야함 임시로 인터페이스 구현
             ImageButton btn = new ImageButton(new Picture() {
@@ -30,14 +32,17 @@ public class GameSamePicPanel extends JPanel {
 
                 @Override
                 public String getPicturePath() {
-                    return "/images/find_same/strawberry.png"; //테스트용, 이후 동적으로 변경
+                    return "/images/find_same/pic" + (id + 1) + ".png"; //테스트용, 이후 동적으로 변경
                 }
             }).getButton();
 
-
-
             btn.setPreferredSize(new Dimension(80, 80));
+
             btn.addActionListener(e -> {
+                if (isLocked) {
+                    return;
+                }
+
                 Object src = e.getSource();
                 if (src instanceof JComponent component) {
                     Object imageId = component.getClientProperty("imageId");
@@ -50,7 +55,9 @@ public class GameSamePicPanel extends JPanel {
                 buttons.add(btn);
                 btn.setIcon(null);
 
-                if (buttons.size() >= 2) {
+                if (buttons.size() == 2) {
+                    isLocked = true;
+
                     Timer timer = new Timer(1000, ev -> { // 1000ms = 1초 딜레이
                         buttons.forEach(button -> {
                             String imagePath = button.getClientProperty("imagePath").toString();
@@ -61,6 +68,7 @@ public class GameSamePicPanel extends JPanel {
                             }
                         });
                         buttons.clear();
+                        isLocked = false;
                     });
                     timer.setRepeats(false); // 한 번만 실행
                     timer.start();
@@ -70,5 +78,10 @@ public class GameSamePicPanel extends JPanel {
         }
 
         add(gridPanel, BorderLayout.CENTER);
+    }
+
+    private static String pathFor(int id) {
+        int n = (id % 5) + 1;
+        return "images/find_same/pic" + n + ".png";
     }
 }
