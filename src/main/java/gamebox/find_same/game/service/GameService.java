@@ -19,9 +19,10 @@ public class GameService {
     }
 
     public void initializePictures() {
+        String hash = UUID.randomUUID().toString();
         for (int i = 1; i <= 32; i++) {
             Picture pic = new Picture.Builder()
-                    .id(i)
+                    .id(HashMaker.make(i, hash))
                     .title("Picture " + i)
                     .path("images/find_same/pic" + i + ".png")
                     .visible(false)

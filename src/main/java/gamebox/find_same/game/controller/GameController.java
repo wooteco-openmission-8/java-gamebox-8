@@ -31,7 +31,7 @@ public class GameController implements Game {
         gameService.newGame(rows, cols);
     }
 
-    public Picture getPicture(int pictureId) {
+    public Picture getPicture(String pictureId) {
         return gameService.getPicture(pictureId);
     }
 

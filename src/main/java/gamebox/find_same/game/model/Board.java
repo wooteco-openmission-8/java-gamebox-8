@@ -22,8 +22,8 @@ public class Board {
         this.cols = cols;
     }
 
-    public void initWithPictureIds(List<Integer> pictureIds) {
-        for (int pid : pictureIds) {
+    public void initWithPictureIds(List<String> pictureIds) {
+        for (String pid : pictureIds) {
             cards.add(new Card(pid));
             cards.add(new Card(pid));
         }
