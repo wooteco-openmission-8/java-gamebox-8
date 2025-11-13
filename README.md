@@ -16,8 +16,49 @@ Swing의 기본 구조는 크게 컨테이너(Container), 컴포넌드(Component
 
 컨테이너는 다른 컴포넌트들을 **담고 관리**하는 역할을 한다. `JFrame`이라는 최상위 컨테이너를 사용하여 애플리케이션 창을 만든다.
 
-- **JFrame:** 애플리케이션의 **기본 창**을 만드는 클래스이다. 가장 바깥 창이 `JFrame`이 된다.
-- **JPanel:** 하나의 **부분적인 컨테이너**로, 여러 UI 컴포넌트를 포함할 수 있는 영역을 만든다. `JFrame` 안에 여러 개의 `JPanel`을 배치하여 UI를 세분화할 수 있다.
+---
+
+## DTO (요청/응답)
+
+* [ ] `PictureRequestDto`
+
+    * `String gameId`
+    * `int index`
+    * `int id` (클라이언트 보유 id, 검증용 선택필드)
+    * `String path` (검증용 선택필드)
+* [ ] `PictureResponseDto`
+
+    * `int index`
+    * `int id`
+    * `String path`
+    * `boolean visible`
+    * (선택) `boolean matched`
+* [ ] `StartGameResponseDto`
+
+    * `String gameId`
+    * `List<PictureResponseDto> pictures` (초기 상태, 모두 `visible=false`)
+* [ ] `GameInfoDto`
+
+    * `GameInfo` 필드들
+
+---
+
+## 리포지토리 (in-memory)
+
+* [ ] `GameRepository` (POJO 클래스, 싱글톤 권장)
+
+    * 내부구조: `ConcurrentHashMap<String, Game> games`
+    * 메서드:
+
+        * `Game createGame(int rows, int cols)` — 새 게임 생성(랜덤 섞기 포함), `gameId` 반환
+        * `Optional<Game> getGame(String gameId)` — 없으면 Optional.empty()
+        * `void saveGame(Game game)` — map에 저장(업데이트)
+        * `void deleteGame(String gameId)`
+        * `List<GameInfo> listGames()`
+    * (선택) 파일 영속화:
+
+        * `void persistGameToFile(String gameId)` — JSON 직렬화
+        * `Game loadGameFromFile(String gameId)`
 
 ex)
 ```angular2html
@@ -31,7 +72,10 @@ frame.setVisible(true); // 창을 보이게 설정
 
 ### 2. 컴포넌트 (Component)
 
-컴포넌트는 **GUI를 구성하는 기본 요소**로, 사용자와의 상호작용을 담당한다. 컴포넌트는 버튼, 텍스트 필드, 레이블 등 다양한 UI 요소들을 말한다.
+* [ ] `GameNotFoundException extends RuntimeException`
+* [ ] `InvalidIndexException`
+* [ ] `PathMismatchException`
+* [ ] `GameStateConflictException`
 
 - **JButton:** 버튼 컴포넌트. 클릭 이벤트를 처리할 수 있다.
 - **JLabel:** 텍스트나 이미지를 표시하는 컴포넌트.
@@ -78,6 +122,15 @@ startButton.addActionListener(new ActionListener() {
 });
 ```
 
+```java
+public class GameRepository {
+    private final ConcurrentHashMap<String, Game> games = new ConcurrentHashMap<>();
+
+    public Game createGame(int rows, int cols) { ... } // returns new Game and stores it
+    public Optional<Game> getGame(String id) { return Optional.ofNullable(games.get(id)); }
+    public void saveGame(Game game) { games.put(game.getGameId(), game); }
+}
+```
 ---
 
 ## 기능 목록

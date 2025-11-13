@@ -1,12 +1,12 @@
 package gamebox.game2048.service.entity;
 
 import gamebox.game2048.Tile;
-
 import java.util.*;
 
 public class Board {
     private static final int FILTER = 0;
     private final Tile[][] board;
+    private boolean win = false;
 
     /**
      * @param rows x축 길이
@@ -25,8 +25,7 @@ public class Board {
     }
 
     /**
-     * @param n
-     * 타일을 생성할 갯수
+     * @param n 타일을 생성할 갯수
      */
     public void randomSpawn(int n) {
         int spawnCount = 0;
@@ -42,7 +41,7 @@ public class Board {
                 spawnCount++;
             }
 
-            if (spawnCount < n && isFull()){
+            if (spawnCount < n && isFull()) {
                 break;
             }
         }
@@ -51,15 +50,42 @@ public class Board {
     /**
      * 보드가 꽉 차있는지
      */
-    private boolean isFull(){
-        for (int row=0; row<board.length; row++){
-            for (int col=0; col<board[0].length; col++){
+    public boolean isFull() {
+        for (int row = 0; row < board.length; row++) {
+            for (int col = 0; col < board[0].length; col++) {
                 if (Objects.equals(get(row, col).getNumber(), 0)) {
                     return false;
                 }
             }
         }
         return true;
+    }
+
+    public boolean canMove() {
+        int rows = board.length;
+        int cols = board[0].length;
+
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                Tile current = get(r, c);
+
+                // 오른쪽 검사
+                if (c + 1 < cols && current.getNumber() == get(r, c + 1).getNumber()) {
+                    return true;
+                }
+
+                // 아래쪽 검사
+                if (r + 1 < rows && current.getNumber() == get(r + 1, c).getNumber()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public boolean isWin() {
+        return win;
     }
 
     /**
@@ -77,183 +103,142 @@ public class Board {
     }
 
     /**
-     * 타일을 위로 올렸을 떄.
-     * 숫자를 먼저 머지한 후,
-     * 타일을 올릴 수 있을 때까지 반복.
+     * 타일을 위로 이동
      */
-    public void upTile() {
-        mergeNumbersWhenUpTile();
-        while (moveTilesWhenUpTile()) {
+    public boolean upTile() {
+        boolean changed = false;
 
-        }
-    }
-
-    public void downTile() {
-        mergeNumbersWhenDownTile();
-        while (moveTilesWhenDownTile()) {
-
-        }
-    }
-
-    /**
-     * 위로 올렸을 때, 합칠 수 있는 숫자를 합침
-     */
-    private void mergeNumbersWhenUpTile() {
-        for (int c=0; c<board.length; c++) {
-            if (hasAtLeastTwoTilesInColumn(c)) {
-                List<Tile> mergableTiles = getMergableTilesWhenUpTile(c);
-                Tile aboveTile = mergableTiles.get(0);
-                Tile bottomTile = mergableTiles.get(1);
-
-                if (hasSameNumber(aboveTile, bottomTile)) {
-                    aboveTile.mergeWith(bottomTile);
-                    bottomTile.delete();
+        for (int c = 0; c < board[0].length; c++) {
+            Tile[] merged = merge(filterColumn(c));
+            for (int r = 0; r < board.length; r++) {
+                Tile newTile;
+                if (merged[r] != null) {
+                    newTile = merged[r];
+                } else {
+                    newTile = Tile.Default();
                 }
-            }
-        }
-    }
 
-    /**
-     * 타일을 위로 올리는 함수
-     * @return 이동한 타일이 있는지
-     */
-    private boolean moveTilesWhenUpTile() {
-        boolean movedAny = false;
-
-        for (int r=1; r<board.length; r++) {
-            for (int c=0; c<board.length; c++) {
-                Tile targetTile = get(r-1, c);
-                Tile currentTile = get(r, c);
-                if (currentTile.moveTo(targetTile)) {
-                    movedAny = true;
+                if (!board[r][c].equals(newTile)) {
+                    board[r][c] = newTile;
+                    changed = true;
                 }
             }
         }
 
-        return movedAny;
+        return changed;
     }
 
     /**
-     * @param c 열 번호
-     * 합쳐질 수 있는 위에 타일과 아래 타일을 설정.
+     * 타일을 아래로 이동
      */
-    private List<Tile> getMergableTilesWhenUpTile(int c) {
-        List<Tile> mergableTiles = new ArrayList<>();
+    public boolean downTile() {
+        boolean changed = false;
+
+        for (int c = 0; c < board[0].length; c++) {
+            List<Tile> tiles = filterColumn(c);
+            Collections.reverse(tiles);
+            Tile[] merged = merge(tiles);
+            Collections.reverse(Arrays.asList(merged));
+
+            for (int r = 0; r < board.length; r++) {
+                Tile newTile;
+                if (merged[r] != null) {
+                    newTile = merged[r];
+                } else {
+                    newTile = Tile.Default();
+                }
+
+                if (!board[r][c].equals(newTile)) {
+                    board[r][c] = newTile;
+                    changed = true;
+                }
+            }
+        }
+
+        return changed;
+    }
+
+    /**
+     * 타일을 왼쪽으로 이동
+     */
+    public boolean leftTile() {
+        boolean changed = false;
+
         for (int r = 0; r < board.length; r++) {
-            Tile currentTile = get(r, c);
-            if (currentTile.getNumber() != 0) {
-                mergableTiles.add(currentTile);
-            }
-
-            if (mergableTiles.size() == 2) {
-                break;
-            }
-        }
-
-        return mergableTiles;
-    }
-
-    private void mergeNumbersWhenDownTile() {
-        for (int c=0; c<board.length; c++) {
-            if (hasAtLeastTwoTilesInColumn(c)) {
-                List<Tile> mergableTiles = getMergableTilesWhenDownTile(c);
-                Tile bottomTile = mergableTiles.get(0);
-                Tile aboveTile = mergableTiles.get(1);
-
-                if (hasSameNumber(bottomTile, aboveTile)) {
-                    bottomTile.mergeWith(aboveTile);
-                    aboveTile.delete();
+            Tile[] merged = merge(filterRows(r));
+            for (int c = 0; c < board[0].length; c++) {
+                Tile newTile;
+                if (merged[c] != null) {
+                    newTile = merged[c];
+                } else {
+                    newTile = Tile.Default();
                 }
-            }
-        }
-    }
 
-    /**
-     * @param c 열 번호
-     * 합쳐질 수 있는 위에 타일과 아래 타일을 설정.
-     */
-    private List<Tile> getMergableTilesWhenDownTile(int c) {
-        List<Tile> mergableTiles = new ArrayList<>();
-        for (int r = board.length-1; r >= 0; r--) {
-            Tile currentTile = get(r, c);
-            if (currentTile.getNumber() != 0) {
-                mergableTiles.add(currentTile);
-            }
-
-            if (mergableTiles.size() == 2) {
-                break;
-            }
-        }
-
-        return mergableTiles;
-    }
-
-    /**
-     * 타일을 위로 올리는 함수
-     * @return 이동한 타일이 있는지
-     */
-    private boolean moveTilesWhenDownTile() {
-        boolean movedAny = false;
-
-        for (int r=board.length-2; r>=0; r--) {
-            for (int c=0; c<board.length; c++) {
-                Tile targetTile = get(r+1, c);
-                Tile currentTile = get(r, c);
-                if (currentTile.moveTo(targetTile)) {
-                    movedAny = true;
+                if (!board[r][c].equals(newTile)) {
+                    board[r][c] = newTile;
+                    changed = true;
                 }
             }
         }
 
-        return movedAny;
+        return changed;
     }
 
-
     /**
-     * @param c 열 번호
-     * @return 0이 아닌 타일이 2개 이상
-     * 한 열에서 0이 아닌 타일이 2개 이상이어야 합치든 말든 할 수 있는 기본 조건이 됨.
+     * 타일을 오른쪽으로 이동
      */
-    private boolean hasAtLeastTwoTilesInColumn(int c) {
-        int tileCount = 0;
+    public boolean rightTile() {
+        boolean changed = false;
+
         for (int r = 0; r < board.length; r++) {
-            Tile tile = get(r, c);
-            if (tile.getNumber() != 0){
-                tileCount++;
+            List<Tile> tiles = filterRows(r);
+            Collections.reverse(tiles);
+            Tile[] merged = merge(tiles);
+            Collections.reverse(Arrays.asList(merged));
+
+            for (int c = 0; c < board[0].length; c++) {
+                Tile newTile;
+                if (merged[c] != null) {
+                    newTile = merged[c];
+                } else {
+                    newTile = Tile.Default();
+                }
+
+                if (!board[r][c].equals(newTile)) {
+                    board[r][c] = newTile;
+                    changed = true;
+                }
             }
         }
 
-        return tileCount >= 2;
-    }
-
-    /**
-     * @param aboveTile 위에 있는 타일
-     * @param bottomTile 아래 있는 타일
-     * @return 두 타일의 번호가 같음
-     */
-    private boolean hasSameNumber(Tile aboveTile, Tile bottomTile) {
-        return aboveTile.getNumber() == bottomTile.getNumber();
+        return changed;
     }
 
 
-    /**
-     * 타일을 왼쪽으로 이동 시켰을때 동작<br>
-     * 수행 후 무작위 위치에 타일 생성 필요
-     */
-    public void leftTile() {
-        for (int i = FILTER; i < board.length; i++) {
-            board[i] = merge(filterTiles(i));
-        }
-    }
 
     /**
-     * @param index
+     * @param columnIndex
      * @return 0이 아닌 Tile만 필터
      */
-    private List<Tile> filterTiles(int index) {
+    private List<Tile> filterColumn(int columnIndex) {
         List<Tile> tiles = new ArrayList<>();
-        for (int i = 0; i < board.length; i++) {
-            Tile tile = get(index, i);
+        for (int r = 0; r < board.length; r++) { // 각 행을 순회
+            Tile tile = get(r, columnIndex);
+            if (tile.getNumber() > FILTER) {
+                tiles.add(tile);
+            }
+        }
+        return tiles;
+    }
+
+    /**
+     * @param rowIndex
+     * @return 0이 아닌 Tile만 필터
+     */
+    private List<Tile> filterRows(int rowIndex) {
+        List<Tile> tiles = new ArrayList<>();
+        for (int c = 0; c < board[0].length; c++) {
+            Tile tile = get(rowIndex, c);
             if (tile.getNumber() > FILTER) {
                 tiles.add(tile);
             }
@@ -275,7 +260,11 @@ public class Board {
             Tile curentTile = tiles.get(read);
             //현재 인덱스 + 1이 전체 리스트 길이보다 작고 다음 값이 현재 값이랑 같으면 병합
             if (read + 1 < tiles.size() && curentTile.getNumber() == tiles.get(read + 1).getNumber()) {
-                result[write++] = curentTile.merge(tiles.get(read + 1));
+                Tile merged = curentTile.merge(tiles.get(read + 1));
+                if (merged.getNumber() == 2048) {
+                    win = true;
+                }
+                result[write++] = merged;
                 read++;//{1,2,3,4}
                 continue;
             }
@@ -286,21 +275,8 @@ public class Board {
     }
 
     /**
-     * 타일을 오른쪽으로 이동 시켰을 때 동작<br>
-     * 수행 후 무작위 위치에 타일 생성 필요
-     */
-    public void rightTile() {
-        for (int i = 0; i < board.length; i++) {
-            List<Tile> tiles = filterTiles(i);
-            Collections.reverse(tiles);// i번째 행 타일 뒤집기 {2,2,0,2} -> {2,0,2,2}
-            Tile[] merge = merge(tiles);//병합
-            Collections.reverse(Arrays.asList(merge)); // 다시 뒤집기  {4,2,0,0} -> {0,0,2,4}
-            board[i] = merge;
-        }
-    }
-
-    /**
      * 테스트용 함수
+     *
      * @param numbers
      */
     public void loadFrom(int[][] numbers) {
@@ -313,6 +289,7 @@ public class Board {
 
     /**
      * 테스트용 함수
+     *
      * @return
      */
     public int[][] snapshotNumbers() {

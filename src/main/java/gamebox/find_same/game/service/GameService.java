@@ -3,11 +3,13 @@ package gamebox.find_same.game.service;
 import gamebox.find_same.game.model.Board;
 import gamebox.find_same.picture.service.entity.Picture;
 import gamebox.find_same.picture.service.repository.PictureRepository;
+import gamebox.util.HashMaker;
+import gamebox.util.exceptions.ErrorType;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 public class GameService {
     private final PictureRepository pictureRepository;
@@ -18,11 +20,12 @@ public class GameService {
     }
 
     public void initializePictures() {
+        String hash = UUID.randomUUID().toString();
         for (int i = 1; i <= 32; i++) {
             Picture pic = new Picture.Builder()
-                    .id(i)
+                    .id(HashMaker.make(i, hash))
                     .title("Picture " + i)
-                    .path("images/pic" + i + ".png")
+                    .path("images/find_same/pic" + i + ".png")
                     .visible(false)
                     .checkCount(0)
                     .build();
@@ -31,25 +34,22 @@ public class GameService {
     }
 
     public void newGame(int rows, int cols){
-        List<Integer> pictureIds = pictureRepository.findAll().stream()
-                .map(picture -> picture.getId())
-                .collect(Collectors.toList());
-
         int needed = (rows * cols) / 2;
-        if (pictureIds.size() < needed){
-            throw new IllegalStateException("[Error] 그림의 개수가 충분하지 않습니다.");
+        List<String> pictures = pictureRepository.findAllIds();
+
+        if (pictures.size() < needed){
+            throw new IllegalStateException(ErrorType.NOT_ENOUGH_PICTURES.getMessage());
         }
 
-        Collections.shuffle(pictureIds);
-        List<Integer> selected = pictureIds.subList(0, needed);
+        Collections.shuffle(pictures);
 
         board = new Board(rows, cols);
-        board.initWithPictureIds(selected);
+        board.initWithPictureIds(pictures.subList(0, needed));
     }
 
     public Optional<Boolean> flipCard(int index){
         if (board == null){
-            throw new IllegalStateException("[Error] 게임이 시작되지 않았습니다.");
+            throw new IllegalStateException(ErrorType.GAME_NOT_STARTED.getMessage());
         }
         return board.flip(index);
     }
@@ -68,7 +68,8 @@ public class GameService {
         return board.getMoves();
     }
 
-    public Picture getPicture(int pictureId) {
+    public Picture getPicture(String pictureId) {
         return pictureRepository.findById(pictureId);
     }
+
 }

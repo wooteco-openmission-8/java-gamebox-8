@@ -2,7 +2,7 @@ package gamebox.find_same.picture.service.entity;
 
 public class Picture {
 
-    private int id;
+    private String id;
     private boolean visible;
     private int checkCount;
     private String title;
@@ -13,7 +13,7 @@ public class Picture {
     public static class Builder {
         private final Picture picture = new Picture();
 
-        public Builder id(int id) {
+        public Builder id(String id) {
             picture.id = id;
             return this;
         }
@@ -43,7 +43,7 @@ public class Picture {
         }
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
