@@ -2,11 +2,10 @@ package gamebox.game2048.service.entity;
 
 import gamebox.game2048.Tile;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class Board {
+    private static final int FILTER = 0;
     private final Tile[][] board;
 
     /**
@@ -26,8 +25,7 @@ public class Board {
     }
 
     /**
-     * @param n
-     * 타일을 생성할 갯수
+     * @param n 타일을 생성할 갯수
      */
     public void randomSpawn(int n) {
         int spawnCount = 0;
@@ -43,7 +41,7 @@ public class Board {
                 spawnCount++;
             }
 
-            if (spawnCount < n && isFull()){
+            if (spawnCount < n && isFull()) {
                 break;
             }
         }
@@ -52,9 +50,9 @@ public class Board {
     /**
      * 보드가 꽉 차있는지
      */
-    private boolean isFull(){
-        for (int row=0; row<board.length; row++){
-            for (int col=0; col<board[0].length; col++){
+    private boolean isFull() {
+        for (int row = 0; row < board.length; row++) {
+            for (int col = 0; col < board[0].length; col++) {
                 if (Objects.equals(get(row, col).getNumber(), 0)) {
                     return false;
                 }
@@ -100,7 +98,7 @@ public class Board {
      * 위로 올렸을 때, 합칠 수 있는 숫자를 합침
      */
     private void mergeNumbersWhenUpTile() {
-        for (int c=0; c<board.length; c++) {
+        for (int c = 0; c < board.length; c++) {
             if (hasAtLeastTwoTilesInColumn(c)) {
                 List<Tile> mergableTiles = getMergableTilesWhenUpTile(c);
                 Tile aboveTile = mergableTiles.get(0);
@@ -116,14 +114,15 @@ public class Board {
 
     /**
      * 타일을 위로 올리는 함수
+     *
      * @return 이동한 타일이 있는지
      */
     private boolean moveTilesWhenUpTile() {
         boolean movedAny = false;
 
-        for (int r=1; r<board.length; r++) {
-            for (int c=0; c<board.length; c++) {
-                Tile targetTile = get(r-1, c);
+        for (int r = 1; r < board.length; r++) {
+            for (int c = 0; c < board.length; c++) {
+                Tile targetTile = get(r - 1, c);
                 Tile currentTile = get(r, c);
                 if (currentTile.moveTo(targetTile)) {
                     movedAny = true;
@@ -136,7 +135,7 @@ public class Board {
 
     /**
      * @param c 열 번호
-     * 합쳐질 수 있는 위에 타일과 아래 타일을 설정.
+     *          합쳐질 수 있는 위에 타일과 아래 타일을 설정.
      */
     private List<Tile> getMergableTilesWhenUpTile(int c) {
         List<Tile> mergableTiles = new ArrayList<>();
@@ -155,7 +154,7 @@ public class Board {
     }
 
     private void mergeNumbersWhenDownTile() {
-        for (int c=0; c<board.length; c++) {
+        for (int c = 0; c < board.length; c++) {
             if (hasAtLeastTwoTilesInColumn(c)) {
                 List<Tile> mergableTiles = getMergableTilesWhenDownTile(c);
                 Tile bottomTile = mergableTiles.get(0);
@@ -171,11 +170,11 @@ public class Board {
 
     /**
      * @param c 열 번호
-     * 합쳐질 수 있는 위에 타일과 아래 타일을 설정.
+     *          합쳐질 수 있는 위에 타일과 아래 타일을 설정.
      */
     private List<Tile> getMergableTilesWhenDownTile(int c) {
         List<Tile> mergableTiles = new ArrayList<>();
-        for (int r = board.length-1; r >= 0; r--) {
+        for (int r = board.length - 1; r >= 0; r--) {
             Tile currentTile = get(r, c);
             if (currentTile.getNumber() != 0) {
                 mergableTiles.add(currentTile);
@@ -191,14 +190,15 @@ public class Board {
 
     /**
      * 타일을 위로 올리는 함수
+     *
      * @return 이동한 타일이 있는지
      */
     private boolean moveTilesWhenDownTile() {
         boolean movedAny = false;
 
-        for (int r=board.length-2; r>=0; r--) {
-            for (int c=0; c<board.length; c++) {
-                Tile targetTile = get(r+1, c);
+        for (int r = board.length - 2; r >= 0; r--) {
+            for (int c = 0; c < board.length; c++) {
+                Tile targetTile = get(r + 1, c);
                 Tile currentTile = get(r, c);
                 if (currentTile.moveTo(targetTile)) {
                     movedAny = true;
@@ -219,7 +219,7 @@ public class Board {
         int tileCount = 0;
         for (int r = 0; r < board.length; r++) {
             Tile tile = get(r, c);
-            if (tile.getNumber() != 0){
+            if (tile.getNumber() != 0) {
                 tileCount++;
             }
         }
@@ -228,7 +228,7 @@ public class Board {
     }
 
     /**
-     * @param aboveTile 위에 있는 타일
+     * @param aboveTile  위에 있는 타일
      * @param bottomTile 아래 있는 타일
      * @return 두 타일의 번호가 같음
      */
@@ -237,14 +237,72 @@ public class Board {
     }
 
 
+    /**
+     * 타일을 왼쪽으로 이동 시켰을때 동작<br>
+     * 수행 후 무작위 위치에 타일 생성 필요
+     */
     public void leftTile() {
+        for (int i = FILTER; i < board.length; i++) {
+            board[i] = merge(filterTiles(i));
+        }
     }
 
+    /**
+     * @param index
+     * @return 0이 아닌 Tile만 필터
+     */
+    private List<Tile> filterTiles(int index) {
+        List<Tile> tiles = new ArrayList<>();
+        for (int i = 0; i < board.length; i++) {
+            Tile tile = get(index, i);
+            if (tile.getNumber() > FILTER) {
+                tiles.add(tile);
+            }
+        }
+
+        return tiles;
+    }
+
+    /**
+     * @param tiles 0이 포함되지 않은 리스트를 인수로 받음
+     * @return 병합이 가능한경우 병합한 배열을 반환
+     */
+    private Tile[] merge(List<Tile> tiles) {
+        int n = board.length;
+        Tile[] result = new Tile[n];
+
+        int write = 0;
+        for (int read = 0; read < tiles.size(); read++) {
+            Tile curentTile = tiles.get(read);
+            //현재 인덱스 + 1이 전체 리스트 길이보다 작고 다음 값이 현재 값이랑 같으면 병합
+            if (read + 1 < tiles.size() && curentTile.getNumber() == tiles.get(read + 1).getNumber()) {
+                result[write++] = curentTile.merge(tiles.get(read + 1));
+                read++;//{1,2,3,4}
+                continue;
+            }
+            result[write++] = curentTile;
+        }
+
+        return result;
+    }
+
+    /**
+     * 타일을 오른쪽으로 이동 시켰을 때 동작<br>
+     * 수행 후 무작위 위치에 타일 생성 필요
+     */
     public void rightTile() {
+        for (int i = 0; i < board.length; i++) {
+            List<Tile> tiles = filterTiles(i);
+            Collections.reverse(tiles);// i번째 행 타일 뒤집기 {2,2,0,2} -> {2,0,2,2}
+            Tile[] merge = merge(tiles);//병합
+            Collections.reverse(Arrays.asList(merge)); // 다시 뒤집기  {4,2,0,0} -> {0,0,2,4}
+            board[i] = merge;
+        }
     }
 
     /**
      * 테스트용 함수
+     *
      * @param numbers
      */
     public void loadFrom(int[][] numbers) {
@@ -257,6 +315,7 @@ public class Board {
 
     /**
      * 테스트용 함수
+     *
      * @return
      */
     public int[][] snapshotNumbers() {
