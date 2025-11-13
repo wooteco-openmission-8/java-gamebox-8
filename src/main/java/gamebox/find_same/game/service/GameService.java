@@ -3,6 +3,7 @@ package gamebox.find_same.game.service;
 import gamebox.find_same.game.model.Board;
 import gamebox.find_same.picture.service.entity.Picture;
 import gamebox.find_same.picture.service.repository.PictureRepository;
+import gamebox.util.exceptions.ErrorType;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,7 +23,7 @@ public class GameService {
             Picture pic = new Picture.Builder()
                     .id(i)
                     .title("Picture " + i)
-                    .path("images/pic" + i + ".png")
+                    .path("images/find_same/pic" + i + ".png")
                     .visible(false)
                     .checkCount(0)
                     .build();
@@ -37,7 +38,7 @@ public class GameService {
 
         int needed = (rows * cols) / 2;
         if (pictureIds.size() < needed){
-            throw new IllegalStateException("[Error] 그림의 개수가 충분하지 않습니다.");
+            throw new IllegalStateException(ErrorType.NOT_ENOUGH_PICTURES.getMessage());
         }
 
         Collections.shuffle(pictureIds);
@@ -49,7 +50,7 @@ public class GameService {
 
     public Optional<Boolean> flipCard(int index){
         if (board == null){
-            throw new IllegalStateException("[Error] 게임이 시작되지 않았습니다.");
+            throw new IllegalStateException(ErrorType.GAME_NOT_STARTED.getMessage());
         }
         return board.flip(index);
     }
@@ -67,4 +68,9 @@ public class GameService {
         if (board == null) return 0;
         return board.getMoves();
     }
+
+    public Picture getPicture(int pictureId) {
+        return pictureRepository.findById(pictureId);
+    }
+
 }

@@ -4,6 +4,7 @@ import gamebox.common.Game;
 import gamebox.find_same.game.model.Board;
 import gamebox.find_same.game.service.GameService;
 
+import gamebox.find_same.picture.service.entity.Picture;
 import gamebox.util.Difficulty;
 import java.util.Optional;
 
@@ -28,6 +29,10 @@ public class GameController implements Game {
         int rows = difficulty.getRows();
         int cols = difficulty.getCols();
         gameService.newGame(rows, cols);
+    }
+
+    public Picture getPicture(int pictureId) {
+        return gameService.getPicture(pictureId);
     }
 
     // 카드 뒤집기
