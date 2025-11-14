@@ -82,8 +82,7 @@ public class GameSamePicPanel extends JPanel {
 
         List<Card> cards = gameSamePicBoard.getCards();
         for (int i = 0; i < cards.size(); i++) {
-            final int index = i;
-            ImageButton btn = createImageButton(cards.get(i), index);
+            ImageButton btn = createImageButton(cards.get(i), i);
             imageButtons.add(btn);
             gridPanel.add(btn);
         }
@@ -176,6 +175,7 @@ public class GameSamePicPanel extends JPanel {
         }
     }
 
+    //TODO
     private void showCardFront(ImageButton btn, Card card, int index) {
         String imagePath = (String) btn.getClientProperty("imagePath");
         try {
