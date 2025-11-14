@@ -8,7 +8,13 @@ import java.util.List;
 import java.util.Optional;
 
 public class GameSamePicBoard {
-    private final int rows, cols;
+    private final int rows;
+    private final int cols;
+    private int moves;
+    private int matches;
+    private boolean waiting = false;
+    private Card firstOpen;
+    private Card secondOpen;
     private final List<Card> cards = new ArrayList<>();
     private Card firstOpen, secondOpen;
     private int moves, matches;
