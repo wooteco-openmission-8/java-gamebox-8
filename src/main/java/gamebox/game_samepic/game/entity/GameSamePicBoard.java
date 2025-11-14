@@ -96,6 +96,12 @@ public class GameSamePicBoard {
         return cards.get(index);
     }
 
+    /**
+     * 게임 종료 조건 <br>
+     * 카드는 사진 * 2 개만큼 존재 맞춘 갯수 * 2가 카드 사이즈와 같다면 모든 사진을 맞춤
+     *
+     * @return - 게임 종료 여부 boolean
+     */
     public boolean gameOver() {
         return matches * 2 == cards.size();
     }
