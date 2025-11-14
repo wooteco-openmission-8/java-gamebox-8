@@ -7,8 +7,10 @@ public class Picture {
     private int checkCount;
     private String title;
     private String path;
+    private String group;
 
-    private Picture(){}
+    private Picture() {
+    }
 
     public static class Builder {
         private final Picture picture = new Picture();
@@ -38,6 +40,11 @@ public class Picture {
             return this;
         }
 
+        public Builder group(String group) {
+            picture.group = group;
+            return this;
+        }
+
         public Picture build() {
             return picture;
         }
@@ -61,5 +68,9 @@ public class Picture {
 
     public String getPath() {
         return path;
+    }
+
+    public String getGroup() {
+        return group;
     }
 }

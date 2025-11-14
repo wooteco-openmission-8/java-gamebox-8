@@ -27,6 +27,7 @@ public class GameSamePicService {
                     .path("/images/find_same/pic" + i + ".png")
                     .visible(false)
                     .checkCount(0)
+                    .group(hash)
                     .build();
             pictureRepository.save(pic);
         }
@@ -39,7 +40,6 @@ public class GameSamePicService {
         if (pictures.size() < needed) {
             throw new IllegalStateException(ErrorType.NOT_ENOUGH_PICTURES.getMessage());
         }
-
 
         gameSamePicBoard = new GameSamePicBoard(rows, cols);
         gameSamePicBoard.initWithPictureIds(pictures.subList(0, needed));
@@ -72,4 +72,7 @@ public class GameSamePicService {
         return pictureRepository.findById(pictureId);
     }
 
+    public void removeGames(String imageGroup) {
+        pictureRepository.removeAll(imageGroup);
+    }
 }

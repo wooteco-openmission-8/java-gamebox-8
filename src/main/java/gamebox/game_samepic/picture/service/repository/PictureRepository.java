@@ -1,6 +1,7 @@
 package gamebox.game_samepic.picture.service.repository;
 
 import gamebox.game_samepic.picture.service.entity.Picture;
+import gamebox.util.HashMaker;
 import gamebox.util.exceptions.ErrorType;
 import gamebox.util.exceptions.KeyDuplicatedException;
 
@@ -56,5 +57,13 @@ public class PictureRepository {
     }
     public List<String> findAllIds(){
         return new ArrayList<>(pictureMap.keySet());
+    }
+
+    public void removeAll(String imageGroup) {
+        int i = 1;
+        while (pictureMap.containsKey(HashMaker.make(i, imageGroup))) {
+            pictureMap.remove(HashMaker.make(i, imageGroup));
+            i++;
+        }
     }
 }

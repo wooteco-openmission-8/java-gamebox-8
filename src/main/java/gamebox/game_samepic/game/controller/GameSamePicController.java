@@ -54,4 +54,8 @@ public class GameSamePicController implements Game {
     public int getMoves(){
         return gameSamePicService.getMoves();
     }
+
+    public void removePictures(String imageGroup) {
+        gameSamePicService.removeGames(imageGroup);
+    }
 }
