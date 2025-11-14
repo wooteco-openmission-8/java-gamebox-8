@@ -41,7 +41,6 @@ public class GameSamePicService {
             throw new IllegalStateException(ErrorType.NOT_ENOUGH_PICTURES.getMessage());
         }
 
-        Collections.shuffle(pictures);
 
         gameSamePicBoard = new GameSamePicBoard(rows, cols);
         gameSamePicBoard.initWithPictureIds(pictures.subList(0, needed));

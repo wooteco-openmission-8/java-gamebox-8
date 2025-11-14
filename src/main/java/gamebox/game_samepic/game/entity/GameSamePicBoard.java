@@ -32,6 +32,8 @@ public class GameSamePicBoard {
         }
         firstOpen = null;
         secondOpen = null;
+        Collections.shuffle(cards);
+
         moves = matches = 0;
     }
 
