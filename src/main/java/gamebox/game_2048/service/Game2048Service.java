@@ -19,10 +19,10 @@ public class Game2048Service {
     /**
      * 위로 이동
      *
-     * @return
+     * @return - 변경 여부
      */
     public boolean moveUp() {
-        boolean changed = game2048Board.upTile();
+        boolean changed = game2048Board.moveUp();
         if(changed) {
             game2048Board.randomSpawn(1);
         }
@@ -31,9 +31,11 @@ public class Game2048Service {
 
     /**
      * 아래로 이동
+     *
+     * @return - 변경 여부
      */
     public boolean moveDown() {
-        boolean changed = game2048Board.downTile();
+        boolean changed = game2048Board.moveDown();
         if(changed) {
             game2048Board.randomSpawn(1);
         }
@@ -42,9 +44,11 @@ public class Game2048Service {
 
     /**
      * 왼쪽으로 이동
+     *
+     * @return - 변경 여부
      */
     public boolean moveLeft() {
-        boolean changed = game2048Board.leftTile();
+        boolean changed = game2048Board.moveLeft();
         if(changed) {
             game2048Board.randomSpawn(1);
         }
@@ -53,9 +57,11 @@ public class Game2048Service {
 
     /**
      * 오른쪽으로 이동
+     *
+     * @return - 변경 여부
      */
     public boolean moveRight() {
-        boolean changed = game2048Board.rightTile();
+        boolean changed = game2048Board.moveRight();
         if(changed) {
             game2048Board.randomSpawn(1);
         }

@@ -57,7 +57,7 @@ class Game2048GameSamePicBoardTest {
             System.out.println();
         }
 
-        game2048Board.upTile();
+        game2048Board.moveUp();
 
         System.out.println("BoardTest.test");
 
@@ -104,7 +104,7 @@ class Game2048GameSamePicBoardTest {
 
         // ------------------- upTile 테스트 -------------------
         game2048Board.loadFrom(initial);
-        game2048Board.upTile();
+        game2048Board.moveUp();
         int[][] upExpected = {
                 {4, 4, 2, 4},
                 {2, 4, 4, 4},
@@ -115,7 +115,7 @@ class Game2048GameSamePicBoardTest {
 
         // ------------------- downTile 테스트 -------------------
         game2048Board.loadFrom(initial);
-        game2048Board.downTile();
+        game2048Board.moveDown();
         int[][] downExpected = {
                 {0, 0, 0, 0},
                 {2, 4, 2, 4},
@@ -126,7 +126,7 @@ class Game2048GameSamePicBoardTest {
 
         // ------------------- leftTile 테스트 -------------------
         game2048Board.loadFrom(initial);
-        game2048Board.leftTile();
+        game2048Board.moveLeft();
         int[][] leftExpected = {
                 {4, 2, 4, 0},
                 {4, 4, 2, 0},
@@ -137,7 +137,7 @@ class Game2048GameSamePicBoardTest {
 
         // ------------------- rightTile 테스트 -------------------
         game2048Board.loadFrom(initial);
-        game2048Board.rightTile();
+        game2048Board.moveRight();
         int[][] rightExpected = {
                 {0, 2, 4, 4},
                 {0, 4, 4, 2},
@@ -158,7 +158,7 @@ class Game2048GameSamePicBoardTest {
                 {0, 0, 0, 0}
         });
 
-        boolean changed = game2048Board.upTile();
+        boolean changed = game2048Board.moveUp();
         assertThat(changed).isTrue();
     }
 
@@ -173,7 +173,7 @@ class Game2048GameSamePicBoardTest {
                 {4, 2, 4, 2}
         });
 
-        boolean changed = game2048Board.upTile();
+        boolean changed = game2048Board.moveUp();
         assertThat(changed).isFalse();
     }
 
@@ -188,7 +188,7 @@ class Game2048GameSamePicBoardTest {
                 {0, 0, 0, 0}
         });
 
-        boolean changed = game2048Board.downTile();
+        boolean changed = game2048Board.moveDown();
         assertThat(changed).isTrue();
     }
 
@@ -203,7 +203,7 @@ class Game2048GameSamePicBoardTest {
                 {4, 2, 4, 2}
         });
 
-        boolean changed = game2048Board.downTile();
+        boolean changed = game2048Board.moveDown();
         assertThat(changed).isFalse();
     }
 
@@ -218,7 +218,7 @@ class Game2048GameSamePicBoardTest {
                 {0, 0, 0, 0}
         });
 
-        boolean changed = game2048Board.leftTile();
+        boolean changed = game2048Board.moveLeft();
         assertThat(changed).isTrue();
     }
 
@@ -233,7 +233,7 @@ class Game2048GameSamePicBoardTest {
                 {4, 2, 4, 2}
         });
 
-        boolean changed = game2048Board.leftTile();
+        boolean changed = game2048Board.moveLeft();
         assertThat(changed).isFalse();
     }
 
@@ -248,7 +248,7 @@ class Game2048GameSamePicBoardTest {
                 {0, 0, 0, 0}
         });
 
-        boolean changed = game2048Board.rightTile();
+        boolean changed = game2048Board.moveRight();
         assertThat(changed).isTrue();
     }
 
@@ -263,7 +263,7 @@ class Game2048GameSamePicBoardTest {
                 {4, 2, 4, 2}
         });
 
-        boolean changed = game2048Board.rightTile();
+        boolean changed = game2048Board.moveRight();
         assertThat(changed).isFalse();
     }
 }

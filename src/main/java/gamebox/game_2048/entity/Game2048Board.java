@@ -109,7 +109,7 @@ public class Game2048Board {
     /**
      * 타일을 위로 이동
      */
-    public boolean upTile() {
+    public boolean moveUp() {
         boolean changed = false;
 
         for (int c = 0; c < board[0].length; c++) {
@@ -135,7 +135,7 @@ public class Game2048Board {
     /**
      * 타일을 아래로 이동
      */
-    public boolean downTile() {
+    public boolean moveDown() {
         boolean changed = false;
 
         for (int c = 0; c < board[0].length; c++) {
@@ -165,7 +165,7 @@ public class Game2048Board {
     /**
      * 타일을 왼쪽으로 이동
      */
-    public boolean leftTile() {
+    public boolean moveLeft() {
         boolean changed = false;
 
         for (int r = 0; r < board.length; r++) {
@@ -190,8 +190,9 @@ public class Game2048Board {
 
     /**
      * 타일을 오른쪽으로 이동
+     * - TODO : 중복된 로직 제거
      */
-    public boolean rightTile() {
+    public boolean moveRight() {
         boolean changed = false;
 
         for (int r = 0; r < board.length; r++) {
@@ -221,8 +222,8 @@ public class Game2048Board {
 
 
     /**
-     * @param columnIndex
-     * @return 0이 아닌 Tile만 필터
+     * @param columnIndex - y축
+     * @return 0이 아닌 열의 Tile만 필터
      */
     private List<Tile> filterColumn(int columnIndex) {
         List<Tile> tiles = new ArrayList<>();
@@ -236,8 +237,8 @@ public class Game2048Board {
     }
 
     /**
-     * @param rowIndex
-     * @return 0이 아닌 Tile만 필터
+     * @param rowIndex - x축
+     * @return 0이 아닌 행의 Tile만 필터
      */
     private List<Tile> filterRows(int rowIndex) {
         List<Tile> tiles = new ArrayList<>();
