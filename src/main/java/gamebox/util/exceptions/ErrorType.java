@@ -7,7 +7,10 @@ public enum ErrorType {
     GAME_NOT_STARTED("게임이 시작되지 않았습니다."),
     DUPLICATED_PICTURE_ID("이미 존재하는 아이디 입니다."),
     INVALID_INDEX("유효하지 않은 카드 인덱스입니다: "),
-    NOT_EXIST_PICTURE("Picture를 찾을 수 없습니다. ID: ");
+    NOT_EXIST_PICTURE("Picture를 찾을 수 없습니다. ID: "),
+
+    // swing
+    INVALID_SELECTED_DIFFICULTY("난이도 선택이 잘못됐습니다.");
 
     private final String message;
 
