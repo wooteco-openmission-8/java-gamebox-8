@@ -22,6 +22,9 @@ import java.util.List;
 
 public class GameSamePicPanel extends JPanel {
     private static final String GAME_CLEAR_MESSAGE = "게임 클리어!\n이동 횟수: ";
+    private static final String GO_BACK_TO_SELECT_DIFFICULTY = "난이도 선택 화면으로 돌아가시겠습니까?\n현재 게임이 초기화됩니다.";
+    private static final String YES = "확인";
+    private static final String BACK_BUTTON_NAME = "뒤로가기";
 
     private final GameSamePicController controller;
     private final JPanel topPanel = new JPanel(new BorderLayout());
@@ -146,9 +149,14 @@ public class GameSamePicPanel extends JPanel {
     }
 
     private void setBackButton(JPanel topPanel) {
-        JButton backButton = new JButton("뒤로 가기");
+        JButton backButton = new JButton(BACK_BUTTON_NAME);
         backButton.addActionListener(
-                new GameListener(this, this::showDifficultySelect)
+                new GameListener(
+                        this,
+                        GO_BACK_TO_SELECT_DIFFICULTY,
+                        YES,
+                        this::showDifficultySelect
+                )
         );
         topPanel.add(backButton, BorderLayout.WEST);
     }
