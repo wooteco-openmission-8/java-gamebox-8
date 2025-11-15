@@ -1,37 +1,20 @@
-# 같은 그림 찾기 — TODO 체크리스트
+# Swing 구현
 
-## 핵심 모델
+## 학습 목표
 
-* [ ] `Picture`
+- Java Swing을 활용해 **그래픽 기반 GUI 애플리케이션**을 설계하고 구현한다.
+- **이벤트 기반 프로그래밍**을 이해하고, 사용자 입력(키보드/마우스)에 반응하는 구조를 만든다.
+- 공통 클래스(`GameWindow`)를 통해 **객체지향적 구조와 코드 재사용성**을 높인다.
 
-    * 필드:
+---
 
-        * `int id` — 그림 고유 id (짝이 같은 그림은 같은 id)
-        * `String path` — 정적 리소스 경로 (ex. `images/dog.png`)
-        * `boolean visible` — 현재 보이는 상태 (true=앞면 보임)
-        * `int clickedCount` — 누적 클릭 수 (선택)
-    * 메서드:
+## Swing 기본 구조
 
-        * `void flip()` — visible 토글
-        * getters/setters, `equals`/`hashCode`(필요시)
-* [ ] `Game`
+Swing의 기본 구조는 크게 컨테이너(Container), 컴포넌드(Component), 그리고 레이아웃(Layout)으로 나눠진다.
 
-    * 필드:
+### 1. 컨테이너 (Container)
 
-        * `String gameId` — UUID
-        * `int rows, cols`
-        * `List<Picture> board` — 크기 `rows*cols`, index 기반
-        * `int matchedCount`
-        * `boolean completed`
-        * `LocalDateTime createdAt`
-    * 메서드:
-
-        * `Picture getPicture(int index)`
-        * `void setPicture(int index, Picture p)`
-        * `boolean isCompleted()`
-* [ ] `GameInfo` (조회용 요약)
-
-    * `String gameId`, `int rows`, `int cols`, `int totalCount`, `int matchedCount`, `boolean completed`
+컨테이너는 다른 컴포넌트들을 **담고 관리**하는 역할을 한다. `JFrame`이라는 최상위 컨테이너를 사용하여 애플리케이션 창을 만든다.
 
 ---
 
@@ -77,142 +60,67 @@
         * `void persistGameToFile(String gameId)` — JSON 직렬화
         * `Game loadGameFromFile(String gameId)`
 
----
+ex)
+```angular2html
+JFrame frame = new JFrame("Game Window");
+frame.setSize(600, 600); // 창의 크기 설정
+frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // 창을 닫을 때 애플리케이션 종료
+frame.setVisible(true); // 창을 보이게 설정
+```
 
-## 서비스 (게임 로직, POJO)
+![JFrame과 JPanel의 구조](JFrame_JPanel_structure.png)
 
-* [ ] `PictureService` (순수 자바 객체)
-
-    * 메서드:
-
-        * `StartGameResponseDto startGame(int rows, int cols)`
-
-            * 동작:
-
-                * 가능한 그림 id 목록 준비(총 `rows*cols/2`쌍)
-                * 각 id를 2개씩 만들어 리스트에 넣고 shuffle
-                * `Picture` 객체 생성(visible=false) → `Game` 생성 → repository에 저장 → DTO 반환
-        * `List<PictureResponseDto> checkSame(List<PictureRequestDto> requests)`
-
-            * 동작:
-
-                * 요청에서 `gameId` 확인(모든 원소 동일해야 함)
-                * `Game` 조회, 존재하지 않으면 예외
-                * 요청 인덱스들(보통 2개)을 `Game.board`에서 꺼냄
-                * **검증 과정**
-
-                    * 인덱스 유효성 체크
-                    * (선택) 요청 path/id와 실제 path/id 비교 -> 불일치면 복구 시도 또는 예외
-                * 같은 그림이면:
-
-                    * 두 `Picture.visible = true;` (고정)
-                    * `game.matchedCount += 2`
-                * 다르면:
-
-                    * 두 `Picture.visible = true` (응답에 보이게 한 뒤, UI가 짧은 딜레이 후 다시 `visible=false`로 바꿀 수 있음)
-                    * **서비스에서 바로 `visible=false`로 되돌릴지** 설계 결정(권장: 서버는 authoritative하므로 `saveState` 호출로 최종 상태 반영)
-                * 게임 완료 시 `game.completed = true`
-                * repository.saveGame(game) 호출
-                * 변경된 인덱스에 해당하는 `PictureResponseDto` 리스트 반환
-        * `List<PictureResponseDto> saveState(List<PictureRequestDto> requests)`
-
-            * 항상 호출되어 서버 상태 동기화 (clickedCount, visible 등 업데이트)
-        * `GameInfo getGameInfo(String gameId)`
-    * 동시성:
-
-        * `checkSame`에서 `synchronized` 또는 `ReentrantLock`으로 `game` 단위 락 권장
-
----
-
-## 예외 정의
+### 2. 컴포넌트 (Component)
 
 * [ ] `GameNotFoundException extends RuntimeException`
 * [ ] `InvalidIndexException`
 * [ ] `PathMismatchException`
 * [ ] `GameStateConflictException`
 
----
+- **JButton:** 버튼 컴포넌트. 클릭 이벤트를 처리할 수 있다.
+- **JLabel:** 텍스트나 이미지를 표시하는 컴포넌트.
+- **JTextField:** 사용자가 텍스트를 입력할 수 있는 필드.
+- **JCheckBox, JRadioButton:** 체크박스나 라디오 버튼과 같은 선택 UI를 제공한다.
 
-## UI (Swing)
-
-* [ ] **UI - View (Swing Frame / Panel)**
-
-    * n*m 그리드(예: `JPanel` + `GridLayout`)로 버튼/카드 생성
-    * 카드마다 index 보관(버튼 `putClientProperty("index", idx)`)
-    * 카드 앞면/뒷면 그리기(이미지 또는 색)
-* [ ] **UI - Controller (이벤트 핸들러)**
-
-    * 내부 상태:
-
-        * `Optional<Integer> firstOpenIndex` (한 장 열린 상태)
-        * `boolean isWaitingForServer` (서버 응답 대기 중 입력 차단)
-    * 클릭 흐름:
-
-        1. 클릭 → index 가져오기
-        2. 로컬에서 카드 앞면 보이기 (`visible=true` in UI only)
-        3. 만약 `firstOpenIndex` 비어있으면 `firstOpenIndex = index` (서버 호출 없음)
-        4. 만약 `firstOpenIndex` 존재하면:
-
-        * `isWaitingForServer = true`
-        * 두 카드의 `PictureRequestDto`를 만들어 `service`(또는 네트워크)로 보냄
-        * 서버 응답 수신:
-
-            * 응답에서 `visible`/`matched`를 읽어 UI 동기화
-            * 만약 `matched=false`이면 짧게(예: 700ms) 보여주고 다시 뒤집기
-        * `firstOpenIndex = empty`, `isWaitingForServer = false`
-* [ ] **네트워크(또는 로컬 호출)**
-
-    * 이 구현은 로컬 모드(동일 프로세스) 또는 네트워크 모드(REST/소켓)로 사용할 수 있음. 현재는 **로컬 호출(함수 호출)** 권장(POJO 환경).
-* [ ] **UI 고려사항**
-
-    * 응답 대기 시 다른 카드 클릭 금지
-    * 게임 완료 시 모달 표시
-    * 에러 발생 시 재시작 유도
-
----
-
-## 동시성 / 안전성
-
-* [ ] `GameRepository`는 `ConcurrentHashMap`
-* [ ] 상태 변경 시 `synchronized(game)` 또는 `Lock`으로 보호
-* [ ] `checkSame`에서 race condition 방지(동일 인덱스에 대해 동시에 처리되지 않도록)
-
----
-
-## 테스트 계획
-
-* [ ] 단위테스트: `startGame(rows,cols)` — 올바른 크기/짝 구성 확인
-* [ ] 단위테스트: `checkSame(같은 인덱스 쌍)` — matchedCount 증가, visible 상태
-* [ ] 단위테스트: `checkSame(다른 인덱스 쌍)` — visible 되었다가 다시 뒤집히는지(혹은 상태 일관성)
-* [ ] 동시성 테스트: 두 스레드가 동시에 같은 게임에서 `checkSame` 호출 시 상태 무결성 유지
-* [ ] 복원 테스트(파일 영속화 사용 시)
-
----
-
-## 샘플 클래스/메서드 시그니처
-
-* [ ] `Picture`
-
-```java
-public class Picture {
-    private final int id;
-    private final String path;
-    private boolean visible;
-    private int clickedCount;
-
-    public Picture(int id, String path) {
-        this.id = id;
-        this.path = path;
-        this.visible = false;
-        this.clickedCount = 0;
-    }
-
-    public void flip() { this.visible = !this.visible; }
-    // getters / setters
-}
+ex)
+```angular2html
+JButton startButton = new JButton("Start Game");
+JLabel scoreLabel = new JLabel("Score: 0");
 ```
 
-* [ ] `GameRepository`
+### 3. 레이아웃 (Layout)
+
+레이아웃은 컴포넌트가 **어떻게 배치**될지를 결정하는 방식이다.
+
+- **FlowLayout:** 컴포넌트를 **왼쪽에서 오른쪽으로, 위에서 아래**로 순차적으로 배치한다. 기본적인 레이아웃이다.
+- **BorderLayout:** **상, 하, 좌, 우, 중앙**의 5개 영역에 컴포넌트를 배치할 수 있다.
+- **GridLayout:** 컴포넌트를 **격자 형태**로 배치한다. 지정된 행과 열 수에 맞게 컴포넌트를 배치한다.
+- **BoxLayout:** 컴포넌트를 **수평 또는 수직**으로 배치한다.
+
+ex)
+```angular2html
+frame.setLayout(new FlowLayout());
+frame.add(startButton);
+frame.add(scoreLabel);
+```
+
+### 4. 이벤트 처리
+
+Swing에서 사용자의 입력에 반응하려면 **이벤트 처리**가 필요하다. 이벤트는 사용자가 버튼을 클릭하거나, 키를 누르는 등의 동작을 의미한다.
+
+- **ActionListener:** 버튼을 클릭하거나 특정 동작을 했을 때 이벤트를 처리한다.
+- **KeyListener:** 키보드 입력을 처리한다.
+- **MouseListener:** 마우스 클릭이나 드래그 등 마우스 이벤트를 처리한다.
+
+ex)
+```angular2html
+startButton.addActionListener(new ActionListener() {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        System.out.println("Game Started!");
+    }
+});
+```
 
 ```java
 public class GameRepository {
@@ -225,12 +133,70 @@ public class GameRepository {
 ```
 ---
 
-## 설계 의사결정 체크리스트 (반드시 결정해야 할 것들)
+## 기능 목록
 
-* [ ] 서버(서비스)가 실패한 매칭(=틀림) 상황에서 `visible` 상태를 **즉시 되돌릴지** 아니면 **클라이언트가 되돌릴지** (권장: 서버가 authoritative로 최종 상태 저장, 클라이언트는 보여주다가 서버 상태로 동기화)
-* [ ] 게임 식별자(`gameId`)를 **클라이언트가 보관할지** (권장: 보관, 재접속 시 사용)
-* [ ] 로컬 모드(POJO 직접 호출) / 네트워크 모드(REST) 중 어느 것부터 구현할지 (권장: 로컬 모드 먼저)
-* [ ] 영속화(파일) 여부와 저장 주기
-* [ ] 에러 복구 전략 (예: path mismatch 시 게임 재시작 또는 특정 카드만 복구)
+### 📌 GameBoxFrame
 
----
+- [x] 프레임 기본 세팅을 한다.
+    - [x] 창 사이즈 (사이즈는 사용자가 조절할 수 없음)
+    - [x] 프레임 레이아웃 설정
+        - [x] GridLayout으로 패널 2개를 위아래로 배치한다.
+- [x] 프레임에 패널을 추가한다.
+
+### 📌 Panel
+
+- `BackgroundPanel`
+    - [x] 텍스트를 추가한다.
+        - title: 게임 제목
+        - selectGame: "게임을 선택하세요."
+    - [x] 패널 레이아웃 설정 ➡ GridLayout
+    - [x] 텍스트들을 패널에 추가한다.
+- `GameButtonPanel`
+    - [x] 패널 레이아웃 설정 ➡ null (Component들의 사이즈와 위치를 직접 지정)
+    - [x] 버튼을 추가한다.
+        - 2048
+        - 같은 그림 찾기
+    - [x] 버튼의 사이즈와 위치를 설정한다.
+    - [x] 패널에 버튼을 추가한다.
+- `MainPanel`
+    - [x] 패널 레이아웃 설정 ➡ BorderLayout
+    - [x] 상단에 BackgroundPanel 추가
+    - [x] 중앙에 contentPanel 추가
+    - [x] 초기 화면으로 GameButtonPanel을 contentPanel에 추가
+    - [x] 버튼 클릭 시 contentPanel 교체 가능
+- `Game2048Panel`
+    - [x] 패널 레이아웃 설정 ➡ BorderLayout
+    - [x] `resetPanel` (BorderLayout.NORTH)
+        - [x] 리셋 버튼 추가
+        - [x] 리셋 버튼을 누르면 보드를 다시 그린다.
+    - [x] `gamePanel` (BorderLayout.CENTER)
+        - [x] 패널 레이아웃 설정 ➡ GridLayout
+        - [x] 보드 그리기 (랜덤 위치에 2 또는 4 타일 2개 생성)
+        - [x] keyListener 추가
+        - [x] 위, 아래, 왼쪽, 오른쪽 방향키를 누르면 해당 방향으로 이동한다.
+
+### 📌 Listener
+
+- [x] 사용자가 원하는 게임을 누르면 해당 게임으로 이동한다.
+- [x] 게임 화면에서 홈 화면으로 돌아가는 기능을 추가한다.
+    - [x] "홈" 버튼 추가
+    - [x] 버튼 클릭 시 contentPanel을 초기 상태로 복원
+
+
+- [x] 각 게임의 보드를 그리드로 생성한다.
+    - [x] 2048: 4x4 그리드
+    - [x] 같은 그림 찾기: 4x4 / 6x6 / 8x8
+
+### 📌 출력기
+
+- [ ] 각 게임마다 점수를 표시한다.
+- [ ] 게임이 종료되면 결과 메세지를 표시한다.
+- [ ] 예외 상황이 발생할 경우 에러 메세지를 표시한다.
+
+### 📌 기타 UI 기능
+
+- [ ] 각 게임의 입력을 클릭 또는 키보드 이벤트로 처리한다.
+- [ ] 게임 종료 후 새 게임 시작 버튼을 통해 게임 초기화가 가능하다.
+    - [ ] 게임 보드와 점수를 초기 상태로 되돌린다.
+
+
