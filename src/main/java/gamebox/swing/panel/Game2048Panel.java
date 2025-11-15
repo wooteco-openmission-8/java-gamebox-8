@@ -3,17 +3,14 @@ package gamebox.swing.panel;
 import gamebox.game_2048.controller.Game2048Controller;
 import gamebox.game_2048.entity.Tile;
 import gamebox.game_2048.entity.GameStatus;
-import gamebox.game_samepic.game.controller.GameSamePicController;
 import gamebox.swing.components.TilePanel;
 import gamebox.swing.listener.Game2048KeyListener;
 import gamebox.swing.listener.GameListener;
-import gamebox.swing.util.SwingUtils;
+import gamebox.swing.swing_util.SwingUtils;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
 public class Game2048Panel extends JPanel {
     private static final String WIN_MESSAGE = "You WIN!";

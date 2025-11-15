@@ -5,6 +5,11 @@ import javax.swing.*;
 import java.awt.*;
 
 public class GameBoxFrame extends JFrame {
+    private static final String APP_NAME = "GameBox";
+
+    private static final int WINDOW_WIDTH = 1000;
+    private static final int WINDOW_HEIGHT = 800;
+
     private final MainPanel mainPanel = new MainPanel();
 
     public GameBoxFrame(){
@@ -14,8 +19,8 @@ public class GameBoxFrame extends JFrame {
     }
 
     private void setInit(){
-        setTitle("GameBox");
-        setSize(1000, 800);
+        setTitle(APP_NAME);
+        setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         setResizable(false);
         setBackground(Color.white);
         setDefaultCloseOperation(EXIT_ON_CLOSE);

@@ -1,4 +1,4 @@
-package gamebox.swing.util;
+package gamebox.swing.swing_util;
 
 import javax.swing.*;
 

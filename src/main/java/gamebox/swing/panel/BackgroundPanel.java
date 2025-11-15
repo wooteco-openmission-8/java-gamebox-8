@@ -1,19 +1,22 @@
 package gamebox.swing.panel;
 
-import gamebox.swing.util.SwingUtils;
+import gamebox.swing.swing_util.SwingUtils;
 
 import java.awt.event.ActionListener;
 import javax.swing.*;
 import java.awt.*;
 
 public class BackgroundPanel extends JPanel {
+    private static final int ROW_COUNT = 3;
+    private static final int COL_COUNT = 1;
+
     private final JLabel title = new JLabel("GameBox");
     private final JLabel selectGame = new JLabel("게임을 선택하세요.");
     private final JButton homeButton = new JButton("홈버튼");
 
     public BackgroundPanel(){
         setBackground(Color.white);
-        setLayout(new GridLayout(3, 1));
+        setLayout(new GridLayout(ROW_COUNT, COL_COUNT));
         selectGame.setVisible(true);
         homeButton.setVisible(false);
         alignTexts();

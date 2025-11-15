@@ -1,7 +1,7 @@
 package gamebox.swing.panel;
 
 import gamebox.swing.listener.AppListener;
-import gamebox.swing.util.SwingUtils;
+import gamebox.swing.swing_util.SwingUtils;
 
 import javax.swing.*;
 import java.awt.*;

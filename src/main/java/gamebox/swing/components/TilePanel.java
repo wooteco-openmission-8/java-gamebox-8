@@ -5,6 +5,7 @@ import java.awt.*;
 
 public class TilePanel extends JPanel {
     private static final int TILE_SIZE = 1;
+    private static final int EMPTY_TILE_NUMBER = 0;
 
     private JLabel label;
 
@@ -17,7 +18,10 @@ public class TilePanel extends JPanel {
     }
 
     public void setTile(int number, Color textColor, Color backgroundColor) {
-        label.setText(number == 0 ? "" : String.valueOf(number));
+        label.setText(String.valueOf(number));
+        if (number == EMPTY_TILE_NUMBER) {
+            label.setText("");
+        }
         label.setForeground(textColor);
         setBackground(backgroundColor);
         repaint();

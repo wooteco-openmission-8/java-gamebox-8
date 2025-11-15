@@ -8,6 +8,11 @@ import java.io.IOException;
 import java.net.URL;
 
 public class ImageButton extends JButton {
+    private static final String IMAGE_PATH_KEY = "imagePath";
+    private static final String IMAGE_ID_KEY = "imageId";
+
+    private static final int IMAGE_SIZE = 128;
+
     private Picture picture;
 
     public ImageButton(Picture picture) {
@@ -19,8 +24,8 @@ public class ImageButton extends JButton {
 
     private void initButton() {
         if (picture != null) {
-            putClientProperty("imageId", picture.getId());
-            putClientProperty("imagePath", picture.getPath());
+            putClientProperty(IMAGE_ID_KEY, picture.getId());
+            putClientProperty(IMAGE_PATH_KEY, picture.getPath());
             setBorderPainted(false);
             setContentAreaFilled(true);
             setFocusPainted(false);
@@ -38,7 +43,7 @@ public class ImageButton extends JButton {
             return new ImageIcon("");
         }
 
-        Image image = scaleImage(ImageIO.read(resource), 128, 128);
+        Image image = scaleImage(ImageIO.read(resource), IMAGE_SIZE, IMAGE_SIZE);
 
         return new ImageIcon(image);
     }
