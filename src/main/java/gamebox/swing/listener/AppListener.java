@@ -9,11 +9,11 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class GameBoxListener implements ActionListener {
+public class AppListener implements ActionListener {
     private final JPanel contentPanel;
     private final BackgroundPanel backgroundPanel; // 추가
 
-    public GameBoxListener(JPanel contentPanel, BackgroundPanel backgroundPanel){
+    public AppListener(JPanel contentPanel, BackgroundPanel backgroundPanel){
         this.contentPanel = contentPanel;
         this.backgroundPanel = backgroundPanel;
     }

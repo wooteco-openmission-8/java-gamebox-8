@@ -1,6 +1,6 @@
 package gamebox.swing.panel;
 
-import gamebox.swing.listener.GameBoxListener;
+import gamebox.swing.listener.AppListener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,7 +27,7 @@ public class MainPanel extends JPanel {
     }
 
     private void addListeners() {
-        GameBoxListener listener = new GameBoxListener(contentPanel,backgroundPanel);
+        AppListener listener = new AppListener(contentPanel,backgroundPanel);
         gameButtonPanel.addGameButtonListener(listener);
         backgroundPanel.addHomeButtonListener(listener);
     }

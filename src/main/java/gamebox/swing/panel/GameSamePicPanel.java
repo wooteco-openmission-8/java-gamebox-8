@@ -10,6 +10,7 @@ import gamebox.swing.components.DifficultySelectPanel;
 import gamebox.game_samepic.game.entity.Difficulty;
 import gamebox.swing.components.Grid;
 import gamebox.swing.components.ImageButton;
+import gamebox.swing.listener.GameListener;
 
 import java.util.Optional;
 import javax.swing.*;
@@ -19,22 +20,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameSamePicPanel extends JPanel {
-    private final List<ImageButton> imageButtons = new ArrayList<>();
+    private static final String GAME_CLEAR_MESSAGE = "게임 클리어!\n이동 횟수: ";
+
     private final GameSamePicController controller;
-    private final CardLayout cardLayout;
+    private final JPanel topPanel = new JPanel(new BorderLayout());
+    private final JPanel gamePanel = new JPanel(new BorderLayout());
     private final JPanel containerPanel;
+    private final List<ImageButton> imageButtons = new ArrayList<>();
+    private final CardLayout cardLayout = new CardLayout();
 
     public GameSamePicPanel() {
         PictureRepository repo = PictureRepository.getInstance();
         GameSamePicService service = new GameSamePicService(repo);
         this.controller = new GameSamePicController(service);
-
         controller.start();
 
-        cardLayout = new CardLayout();
-        containerPanel = new JPanel(cardLayout);
-
         setLayout(new BorderLayout());
+
+        containerPanel = new JPanel(cardLayout);
         add(containerPanel, BorderLayout.CENTER);
 
         showDifficultySelect();
@@ -48,67 +51,20 @@ public class GameSamePicPanel extends JPanel {
 
     private void startGame(Difficulty difficulty) {
         controller.start(difficulty);
-        initializeGameUI();
+        buildGameScreen();
         cardLayout.show(containerPanel, "GAME");
     }
 
-    private void initializeGameUI() {
-        JPanel gamePanel = new JPanel(new BorderLayout());
+    private void buildGameScreen() {
         imageButtons.clear();
 
-        JPanel topPanel = new JPanel(new BorderLayout());
-
-        JButton backButton = new JButton("뒤로 가기");
-        backButton.addActionListener(e -> {
-            int choice = JOptionPane.showConfirmDialog(
-                    this,
-                    "난이도 선택 화면으로 돌아가시겠습니까?\n현재 게임이 초기화됩니다.",
-                    "확인",
-                    JOptionPane.YES_NO_OPTION
-            );
-            if (choice == JOptionPane.YES_OPTION) {
-                showDifficultySelect();
-            }
-        });
-        topPanel.add(backButton, BorderLayout.WEST);
-
-        JLabel titleLabel = new JLabel("Game 같은 그림 찾기", SwingConstants.CENTER);
-        topPanel.add(titleLabel, BorderLayout.CENTER);
-
-        gamePanel.add(topPanel, BorderLayout.NORTH);
-
-        GameSamePicBoard gameSamePicBoard = controller.getBoard();
-        JPanel gridPanel = Grid.createGridPanel(gameSamePicBoard.getRows(), gameSamePicBoard.getCols());
-
-        List<Card> cards = gameSamePicBoard.getCards();
-        for (int i = 0; i < cards.size(); i++) {
-            final int index = i;
-            ImageButton btn = createImageButton(cards.get(i), index);
-            imageButtons.add(btn);
-            gridPanel.add(btn);
-        }
-
-        gamePanel.add(gridPanel, BorderLayout.CENTER);
+        setTopPanel();
+        drawBoard();
 
         containerPanel.removeAll();
         containerPanel.add(gamePanel, "GAME");
         containerPanel.revalidate();
         containerPanel.repaint();
-    }
-
-    private ImageButton createImageButton(Card card, int index) {
-        String pictureId = card.getPictureId();
-        Picture picture = controller.getPicture(pictureId);
-        ImageButton btn = new ImageButton(picture);
-
-        btn.setPreferredSize(new Dimension(128, 128));
-        btn.setText("?");
-        btn.setBackground(Color.LIGHT_GRAY);
-        btn.setIcon(null);
-
-        btn.addActionListener(e -> handleCardClick(index));
-
-        return btn;
     }
 
     private void handleCardClick(int index) {
@@ -122,24 +78,24 @@ public class GameSamePicPanel extends JPanel {
         updateCard(index);
 
         boolean isMatched = result.get();
-
         if (!isMatched) {
-            List<Integer> flippedIndices = findFlippedCardIndices();
-
-            Timer timer = new Timer(1000, ev -> {
-                controller.getBoard().resetUnmatched();
-                for (int i : flippedIndices) {
-                    updateCard(i);
-                }
-            });
-            timer.setRepeats(false);
-            timer.start();
+            resetMismatchedCards();
         }
 
-        if (controller.isGameOver()) {
-            JOptionPane.showMessageDialog(this,
-                    "게임 클리어!\n이동 횟수: " + controller.getMoves());
-        }
+        checkGameOver();
+    }
+
+    private void resetMismatchedCards() {
+        List<Integer> flippedIndices = findFlippedCardIndices();
+
+        Timer timer = new Timer(1000, ev -> {
+            controller.getBoard().resetUnmatched();
+            for (int i : flippedIndices) {
+                updateCard(i);
+            }
+        });
+        timer.setRepeats(false);
+        timer.start();
     }
 
     private List<Integer> findFlippedCardIndices() {
@@ -157,7 +113,7 @@ public class GameSamePicPanel extends JPanel {
     }
 
     private void updateCard(int index) {
-        Card card = controller.getBoard().getCards().get(index);
+        Card card = controller.getBoard().getCard(index);
         ImageButton btn = imageButtons.get(index);
 
         if (card.isFaceUp() || card.isMatched()) {
@@ -187,5 +143,67 @@ public class GameSamePicPanel extends JPanel {
         btn.setIcon(null);
         btn.setText("?");
         btn.setBackground(Color.LIGHT_GRAY);
+    }
+
+    private void setBackButton(JPanel topPanel) {
+        JButton backButton = new JButton("뒤로 가기");
+        backButton.addActionListener(
+                new GameListener(this, this::showDifficultySelect)
+        );
+        topPanel.add(backButton, BorderLayout.WEST);
+    }
+
+    private void setTopPanel() {
+        setGameName(topPanel);
+        setBackButton(topPanel);
+        gamePanel.add(topPanel, BorderLayout.NORTH);
+    }
+
+    private void setGameName(JPanel topPanel) {
+        JLabel titleLabel = new JLabel("Game 같은 그림 찾기", SwingConstants.CENTER);
+        topPanel.add(titleLabel, BorderLayout.CENTER);
+    }
+
+    private void drawBoard() {
+        GameSamePicBoard gameSamePicBoard = controller.getBoard();
+        JPanel gridPanel = Grid.createGridPanel(gameSamePicBoard.getRows(), gameSamePicBoard.getCols());
+
+        createPictureButtons(gameSamePicBoard, gridPanel);
+
+        gamePanel.add(gridPanel, BorderLayout.CENTER);
+    }
+
+    private void createPictureButtons(GameSamePicBoard gameSamePicBoard, JPanel gridPanel) {
+        List<Card> cards = gameSamePicBoard.getCards();
+
+        for (int i = 0; i < cards.size(); i++) {
+            final int index = i;
+            ImageButton btn = createImageButton(cards.get(i), index);
+            imageButtons.add(btn);
+            gridPanel.add(btn);
+        }
+    }
+
+    private ImageButton createImageButton(Card card, int index) {
+        String pictureId = card.getPictureId();
+        Picture picture = controller.getPicture(pictureId);
+        ImageButton btn = new ImageButton(picture);
+
+        btn.setPreferredSize(new Dimension(128, 128));
+        btn.setText("?");
+        btn.setBackground(Color.LIGHT_GRAY);
+        btn.setIcon(null);
+
+        btn.addActionListener(e -> handleCardClick(index));
+
+        return btn;
+    }
+
+    private void checkGameOver() {
+        if (controller.isGameOver()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    GAME_CLEAR_MESSAGE + controller.getMoves());
+        }
     }
 }
